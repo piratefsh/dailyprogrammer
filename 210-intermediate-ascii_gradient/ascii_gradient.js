@@ -65,11 +65,13 @@ function findLinearDistance(x, y, x1, y1, x2, y2){
         return x - x1;
     }
     else{
-        // return linearDistanceMethodB(x, y, x1, y1, x2, y2);    
+        return linearDistanceMethodB(x, y, x1, y1, x2, y2);    
         return linearDistanceMethodA(x, y, x1, y1, x2, y2);    
     }
 }
 
+// See 'Another formula'
+// https://www.wikiwand.com/en/Distance_from_a_point_to_a_line
 function linearDistanceMethodB(x, y, x1, y1, x2, y2){
     var slope, constC, d;
     slope = (1.0 * (y2 - y1)) / (x2 - x1);
@@ -89,9 +91,9 @@ function linearDistanceMethodB(x, y, x1, y1, x2, y2){
     return b;
 }
 
+// perpendicular distance of point to line
+// https://www.wikiwand.com/en/Distance_from_a_point_to_a_line
 function linearDistanceMethodA(x, y, x1, y1, x2, y2){
-    // perpendicular distance of point to line
-    // https://www.wikiwand.com/en/Distance_from_a_point_to_a_line
     var constX, constY, constC, slope;
     slope = (1.0 * (y2 - y1)) / (x2 - x1);
     constY = 1.0;
