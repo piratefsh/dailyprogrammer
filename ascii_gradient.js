@@ -58,7 +58,6 @@ function findRawDistance(x1, y1, x2, y2){
 }
 
 function findLinearDistance(x, y, x1, y1, x2, y2){
-    var constX, constY, constC, slope;
     if(x2 == x1){
         return y - y1;
     }
@@ -66,24 +65,44 @@ function findLinearDistance(x, y, x1, y1, x2, y2){
         return x - x1;
     }
     else{
-        // perpendicular distance of point to line
-        // https://www.wikiwand.com/en/Distance_from_a_point_to_a_line
-        slope = (1.0 * (y2 - y1)) / (x2 - x1);
-        constY = 1.0;
-        constX = -1.0 * slope;
-        constC = slope * x1 - y1;
-        var pTop = Math.abs(constX * x + constY * y + constC);
-        var pBottom = Math.sqrt(Math.pow(constX, 2) + Math.pow(constY, 2));
-        var perpendicularDistance = (1.0 * pTop) / pBottom; 
-
-        //pythagorean to find distance of perpendicular line intersection with gradient line
-        var a, b, c; 
-        a = perpendicularDistance;
-        c = findRawDistance(x, y, x1, y1);
-        
-        b = Math.sqrt(Math.pow(c,2) - Math.pow(a,2));
+        return linearDistanceMethodB(x, y, x1, y1, x2, y2);    
+        return linearDistanceMethodA(x, y, x1, y1, x2, y2);    
     }
-    return Math.floor(b); 
+}
+
+function linearDistanceMethodB(x, y, x1, y1, x2, y2){
+    var slope, constC, d;
+    slope = (1.0 * (y2 - y1)) / (x2 - x1);
+    constC = y1 - slope * x1;
+
+    var left, right;
+
+    left = Math.pow((1.0*x+slope*y - slope*constC)/(Math.pow(slope,2) + 1) - x, 2);
+    right = Math.pow(slope*((x + slope * y - slope * constC)/(slope*slope + 1)) + constC - y, 2)
+
+    d = Math.sqrt(left + right);
+    return d;
+}
+
+function linearDistanceMethodA(x, y, x1, y1, x2, y2){
+    // perpendicular distance of point to line
+    // https://www.wikiwand.com/en/Distance_from_a_point_to_a_line
+    var constX, constY, constC, slope;
+    slope = (1.0 * (y2 - y1)) / (x2 - x1);
+    constY = 1.0;
+    constX = -1.0 * slope;
+    constC = slope * x1 - y1;
+    var pTop = Math.abs(constX * x + constY * y + constC);
+    var pBottom = Math.sqrt(Math.pow(constX, 2) + Math.pow(constY, 2));
+    var perpendicularDistance = (1.0 * pTop) / pBottom; 
+
+    //pythagorean to find distance of perpendicular line intersection with gradient line
+    var a, b, c; 
+    a = perpendicularDistance;
+    c = findRawDistance(x, y, x1, y1);
+    
+    b = Math.sqrt(Math.pow(c,2) - Math.pow(a,2));
+   return Math.floor(b); 
 }
 
 function makeLinearGradient(grid, args){
