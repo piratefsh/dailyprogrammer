@@ -55,7 +55,14 @@ function findDistance(x1, y1, x2, y2){
 }
 
 function findLinearDistance(x, y, x1, y1, x2, y2){
-    return Math.floor(Math.abs((x1-x)/2 + (y1-y)/2)); 
+    var constX, constY, constC, slope;
+    slope = 1.0 * (y2 - y1) / (x2 - x1);
+    constY = 1.0;
+    constX = -1.0 * slope;
+    constC = y1 - slope*x1;
+    var perpendicularDistance = Math.abs(constX * x + constY * y + constC) / Math.pow(Math.pow(constX, 2) + Math.pow(constY/2),0.5);
+    // return Math.floor(Math.abs((x1-x)/2 + (y1-y)/2));
+    return perpendicularDistance; 
 }
 
 function makeLinearGradient(grid, args){
