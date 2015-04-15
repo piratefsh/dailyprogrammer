@@ -11,10 +11,10 @@ if(type == "radial"){
 }
 else if(type=="linear"){
     args = {
-        startX: gradientArgs[2],
-        startY: gradientArgs[1],
-        endX: gradientArgs[4],
-        endY: gradientArgs[3],
+        startX: gradientArgs[1],
+        startY: gradientArgs[2],
+        endX: gradientArgs[3],
+        endY: gradientArgs[4],
         colors: ['.', ',', ':', ';', 'x', 'X', '&', '@'],
         type: type
     }
@@ -65,7 +65,7 @@ function findLinearDistance(x, y, x1, y1, x2, y2){
         return x - x1;
     }
     else{
-        return linearDistanceMethodB(x, y, x1, y1, x2, y2);    
+        // return linearDistanceMethodB(x, y, x1, y1, x2, y2);    
         return linearDistanceMethodA(x, y, x1, y1, x2, y2);    
     }
 }
@@ -81,7 +81,12 @@ function linearDistanceMethodB(x, y, x1, y1, x2, y2){
     right = Math.pow(slope*((x + slope * y - slope * constC)/(slope*slope + 1)) + constC - y, 2)
 
     d = Math.sqrt(left + right);
-    return d;
+
+    var a, b, c; 
+    a = d;
+    c = findRawDistance(x, y, x1, y1);
+    b = pythagoreanFindB(a, c);
+    return b;
 }
 
 function linearDistanceMethodA(x, y, x1, y1, x2, y2){
@@ -96,17 +101,20 @@ function linearDistanceMethodA(x, y, x1, y1, x2, y2){
     var pBottom = Math.sqrt(Math.pow(constX, 2) + Math.pow(constY, 2));
     var perpendicularDistance = (1.0 * pTop) / pBottom; 
 
-    //pythagorean to find distance of perpendicular line intersection with gradient line
     var a, b, c; 
     a = perpendicularDistance;
     c = findRawDistance(x, y, x1, y1);
-    
-    b = Math.sqrt(Math.pow(c,2) - Math.pow(a,2));
-   return Math.floor(b); 
+    b = pythagoreanFindB(a, c);
+    return b;
+}
+
+function pythagoreanFindB(a, c){
+    var b = Math.sqrt(Math.pow(c,2) - Math.pow(a,2));
+    return Math.floor(b); 
 }
 
 function makeLinearGradient(grid, args){
-    var maxDistance = findDistance(args.startX, args.startY, args.endX, args.endY);
+    var maxDistance = findDistance(args.startX, args.startY, args.endX, args.endY)/2;
     console.log(maxDistance)
     for(var i = 0; i < grid.length; i++){
         for(var j = 0; j < grid[i].length; j++){
