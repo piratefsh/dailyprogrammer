@@ -7,8 +7,10 @@ var path = [];
 
 var money = {x: '0', y: '0'};
 var ogre = {
+    found: false,
     x: '0', 
     y: '0',
+    size: '2',
     isTouching: function(x, y){
         if(this.x == x && this.y == y){
             return true;
@@ -26,9 +28,10 @@ var data = fs.readFile(filename, function(err, data){
             for(var j = 0; j < row.length; j++){
                 cell = row[j];
                 arrRow.push(cell);
-                if(cell == '@'){
+                if(cell == '@' && !ogre.found){
                     ogre.x = i;
                     ogre.y = j;
+                    ogre.found = true;
                 }
                 else if(cell == '$'){
                     money.x = i;
@@ -39,15 +42,23 @@ var data = fs.readFile(filename, function(err, data){
             path.push(new Array(row.length))
             maze.push(arrRow);
         }
-        solveMaze(ogre.x, ogre.y);
-        printMaze();
+        if(solveMaze(ogre.x, ogre.y)){
+            printMaze();
+        }
+        else{
+            console.log('No path :(')
+        }
     }
 });
 
+function isOnMoney(x, y){
+    return (maze[x][y] == '$' || maze[x][y+1] == '$'
+        || maze[x+1][y] == '$' || maze[x+1][y+1] == '$');
+}
+
 function solveMaze(x, y){
     // Reached goal
-    if(x == money.x && y == money.y){
-        console.log('found')
+    if(isOnMoney(x, y)){
         return true;
     }
 
@@ -59,34 +70,54 @@ function solveMaze(x, y){
     visited[x][y] = true;
 
     // Go left
-    if(y > 0){
+    if(canGo('left', x, y)){
         if(solveMaze(x, y - 1)){
             return isPath(x, y);
         }
     }
     // Go right
-    if(y < maze[0].length -1){
+    if(canGo('right', x, y)){
         if(solveMaze(x, y + 1)){
             return isPath(x, y);
         }
     }
     // Go top
-    if(x != 0){
+    if(canGo('top', x, y)){
         if(solveMaze(x - 1, y)){
             return isPath(x, y);
         }
     }
     // Go bottom
-    if(x < maze.length - 1 ){
+    if(canGo('bottom', x, y)){
         if(solveMaze(x + 1, y)){
+            console.log('bottom')
             return isPath(x, y);
         }
     }
     return false;
 }
 
+function canGo(direction, x, y){
+    var isNotEdge, isNotWall;
+    switch(direction){
+        case 'left':
+            isNotEdge = y > 0;
+            return isNotEdge && !isWall(x, y-1) && (maze[x+1] && !isWall(x+1, y-1));
+        case 'right':
+            isNotEdge = y < maze[0].length - 2;
+            return isNotEdge && !isWall(x, y+2) && (maze[x+1] && !isWall(x+1, y+2));
+        case 'top': 
+            isNotEdge = x > 0;
+            return isNotEdge && !isWall(x-1, y) && (maze[y+1] && !isWall(x-1, y+1));
+        case 'bottom': 
+            isNotEdge = x < maze.length - 2;
+            return isNotEdge && !isWall(x+2, y) && (maze[y+1] && !isWall(x+2, y+1));
+    }
+}
+
 function isPath(x, y){
     path[x][y] = true;
+    printMaze();
     return true;
 }
 
@@ -99,6 +130,10 @@ function printMaze(){
     for(var i = 0; i < maze.length; i++){
         for(var j = 0; j < maze[i].length; j++){
             if(path[i][j]){
+                process.stdout.write('*');
+            }
+            else if(i != 0 && path[i - 1][j]
+                || j!=0 && path[i][j - 1] || (i!=0 && j!=0) && path[i - 1][j-1 ]){
                 process.stdout.write('&');
             }
             else{
