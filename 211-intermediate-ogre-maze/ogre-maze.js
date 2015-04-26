@@ -87,7 +87,6 @@ function solveMaze(x, y){
 
 function isPath(x, y){
     path[x][y] = true;
-    printMaze();
     return true;
 }
 
