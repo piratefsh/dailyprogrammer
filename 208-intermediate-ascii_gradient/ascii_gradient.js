@@ -1,5 +1,12 @@
 // Challenge description:
-// http://www.reddit.com/r/dailyprogrammer/comments/32o5je/20150415_challenge_210_intermediate_drawing_a/
+// http://www.reddit.com/r/dailyprogrammer/comments/3104wu/20150401_challenge_208_intermediate_ascii/
+
+
+if(process.argv.length < 5){
+    console.log("Usage for radial gradient: node ascii_gradient.js <canvas size width> <canvas size width> radial,<center x>,<center y>,<radius>");
+    console.log("Usage for linear gradient: node ascii_gradient.js <canvas size width> <canvas size width>linear,<start x>,<start y>,<end x>,<end y>");
+    return;
+}
 
 var x = parseInt(process.argv[3]), y = parseInt(process.argv[2]), gradientArgs = process.argv[4].split(',');
 var type = gradientArgs[0], args;
