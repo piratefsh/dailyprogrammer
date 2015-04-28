@@ -1,5 +1,10 @@
+// Challenge description:
+// http://www.reddit.com/r/dailyprogrammer/comments/32o5je/20150415_challenge_210_intermediate_drawing_a/
+
 var x = parseInt(process.argv[3]), y = parseInt(process.argv[2]), gradientArgs = process.argv[4].split(',');
 var type = gradientArgs[0], args;
+
+// Configs for gradients
 if(type == "radial"){
     args = {
         centerX: gradientArgs[2],
@@ -70,7 +75,7 @@ function findLinearDistance(x, y, x1, y1, x2, y2){
     }
 }
 
-// See 'Another formula'
+// Alternative linear gradient method. See 'Another formula':
 // https://www.wikiwand.com/en/Distance_from_a_point_to_a_line
 function linearDistanceMethodB(x, y, x1, y1, x2, y2){
     var slope, constC, d;
@@ -91,8 +96,8 @@ function linearDistanceMethodB(x, y, x1, y1, x2, y2){
     return b;
 }
 
-// perpendicular distance of point to line
-// https://www.wikiwand.com/en/Distance_from_a_point_to_a_line
+// Finds the perpendicular distance of point to line, 
+// which is directly proportional to how 'dark' the color is at that point
 function linearDistanceMethodA(x, y, x1, y1, x2, y2){
     var constX, constY, constC, slope;
     slope = (1.0 * (y2 - y1)) / (x2 - x1);
