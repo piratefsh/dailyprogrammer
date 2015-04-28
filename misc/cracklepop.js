@@ -18,9 +18,3 @@ for(var i = 1; i <= 100; i++){
     process.stdout.write('\n');
  }
 
-var numbers = new Array(100);
-var out = numbers.reduce(function(curr, elem){
-    return curr + elem
-}, "");
-
-console.log(out);
