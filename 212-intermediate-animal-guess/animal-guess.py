@@ -28,7 +28,7 @@ while True:
 
     # check if we guessed animal correctly  
     guessed_animal = curr.content
-    response = input('Are you thinking of a %s? ' % gus)
+    response = input('Are you thinking of a %s? ' % guessed_animal)
 
     # guessed right
     if response == 'y':             
@@ -36,22 +36,20 @@ while True:
 
     # guessed wrongly
     else:                           
-        new_animal = input('Oh dear, what was the right answer? ')
-        new_question = input('What is a question that distinguishes %s from %s? ' % new_animal, guessed_animal)
+        new_animal      = input('Oh dear, what was the right answer? ')
+        new_question    = input('What is a question that distinguishes %s from %s? ' % (new_animal, guessed_animal))
         new_animal_response = input('What would the answer be for %s? ' % new_animal)
 
         # add new question
-        new_node    = Node(new_question + " ")
+        new_node = Node(new_question + " ")
         if new_animal_response == 'y':
-            new_node.yes = Node(new_animal)
-            new_node.no = curr
+            new_node.yes    = Node(new_animal)
+            new_node.no     = curr
         else:
-            new_node.no = Node(new_animal)
-            new_node.yes = curr
+            new_node.no     = Node(new_animal)
+            new_node.yes    = curr
 
         if prev_response == 'y':
             prev.yes    = new_node
-            prev.no     = curr
         else:
-            prev.no    = new_node
-            prev.yes     = curr
+            prev.no     = new_node
