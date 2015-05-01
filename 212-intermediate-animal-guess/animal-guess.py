@@ -20,12 +20,14 @@ def tree_to_string(root, count):
     right   = tree_to_string(curr.getNext('n'), count + 1)
     left    = "\n" + left if len(left) > 0 else left
     right   = "\n" + right if len(right) > 0 else right
-
     padding = ""
     for i in range(count):
         padding += "-"
-
     return padding + curr.content + left + right
+
+def save(content):
+    f = open('animals.txt', 'w')
+    f.write(content)
 
 # initialize tree with single question and animal
 init_leaf   = Node('cat')
@@ -34,7 +36,6 @@ root.yes    = init_leaf
 
 while True:
     # start from root node, travel down tree
-    print(tree_to_string(root, 0))
     curr        = root
     while True:
         prev     = curr
@@ -72,3 +73,5 @@ while True:
             prev.yes    = new_node
         else:
             prev.no     = new_node
+
+    save(tree_to_string(root, 0))
