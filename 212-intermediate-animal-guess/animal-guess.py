@@ -8,6 +8,8 @@ class Node:
         if answer is 'y':
             return self.yes
         return self.no
+    def hasNext(self):
+        return self.yes or self.no
 
 # initialize tree with single question and animal
 init_leaf   = Node('Cat')
@@ -16,6 +18,7 @@ root.yes    = init_leaf
 
 while True:
     # start from root node, travel down tree
+    print_tree(root)
     curr        = root
     while True:
         prev     = curr
@@ -31,7 +34,7 @@ while True:
     response = input('Are you thinking of a %s? ' % guessed_animal)
 
     # guessed right
-    if response == 'y':             
+    if response is 'y':             
         print('Thanks for playing!')
 
     # guessed wrongly
@@ -42,14 +45,26 @@ while True:
 
         # add new question
         new_node = Node(new_question + " ")
-        if new_animal_response == 'y':
+        if new_animal_response is 'y':
             new_node.yes    = Node(new_animal)
             new_node.no     = curr
         else:
             new_node.no     = Node(new_animal)
             new_node.yes    = curr
 
-        if prev_response == 'y':
+        if prev_response is 'y':
             prev.yes    = new_node
         else:
             prev.no     = new_node
+
+def print_tree(root):
+    if not root:
+        return
+    curr    = root
+    if curr.hasNext():
+        if next_y:
+            print_tree(curr.getNext('y'))
+        if next_n:
+            print_tree(curr.getNext('n'))
+
+    print curr.content.ljust(count)
