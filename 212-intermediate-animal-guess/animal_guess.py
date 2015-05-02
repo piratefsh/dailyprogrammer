@@ -69,7 +69,7 @@ def start():
 
         # guessed right
         if response is 'y':             
-            print('Thanks for playing!')
+            print('Thanks for playing!\n')
 
         # guessed wrongly
         else:                           
