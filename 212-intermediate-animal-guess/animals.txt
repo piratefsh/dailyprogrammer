@@ -1,4 +1,7 @@
 Are you thinking of an animal? 
--barks? 
---dog
---cat
+barks? 
+-
+dog
+swims? 
+fish
+cat
