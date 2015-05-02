@@ -4,7 +4,7 @@ savefile = 'animals.txt'
 # Question tree node
 class Node:
     def __init__(self, content):
-        self.content = content
+        self.content = content.strip()
         self.yes = None # child nodes for 'y' and 'n' answers
         self.no = None
     def getNext(self, answer):
@@ -31,8 +31,14 @@ def tree_to_string(root, count=0):
     return padding + curr.content.strip() + left + right
 
 def tree_as_array(curr, arr=[], index=0):
-    if not curr:
+    pprint(arr)
+
+    if index < len(arr):
+        arr.extend([None]*(index-len(arr)))
+
+    if curr is None:
         return arr
+        
     arr.insert(index, curr)
     tree_as_array(curr.yes, arr, (index+1)*2-1)
     tree_as_array(curr.no, arr, (index+1)*2)
@@ -63,7 +69,6 @@ def save(arr):
 def start():
     root = load(savefile)
     while True:
-        print(tree_to_string(root))
         # start from root node, travel down tree
         curr        = root
         while True:
@@ -103,6 +108,8 @@ def start():
             else:
                 prev.no     = new_node
 
-        save(tree_as_array(root))
+        save(tree_as_array(root, []))
+        # pprint(tree_as_array(root, []))
 
 start()
+# root = load(savefile)
