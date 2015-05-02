@@ -3,13 +3,10 @@ savefile = 'animals.txt'
 
 # Question tree node
 class Node:
-    id_counter = 0
     def __init__(self, content):
         self.content = content
         self.yes = None # child nodes for 'y' and 'n' answers
         self.no = None
-        self.id_counter = id_counter + 1
-        id_counter += 1
     def getNext(self, answer):
         if answer is 'y':
             return self.yes
@@ -33,22 +30,28 @@ def tree_to_string(root, count=0):
         padding += "-"
     return padding + curr.content.strip() + left + right
 
-def save_tree(curr):
-    if not curr return
-    arr = curr + save_tree(curr.yes) + save_tree(curr.no)
+def tree_as_array(curr, arr=[], index=0):
+    if not curr:
+        return arr
+    arr.insert(index, curr)
+    tree_as_array(curr.yes, arr, (index+1)*2-1)
+    tree_as_array(curr.no, arr, (index+1)*2)
+
     return arr
 
-def load_tree(arr):
-    arr.sort(by_id)
-    pprint(arr)
-
-def by_id(a, b):
-    return a - b
+def array_to_tree(arr, index=0):
+    if index >= len(arr) or arr[index] is '\n':
+        return None
+    tree = Node(arr[index])
+    tree.yes = array_to_tree(arr, (index+1)*2-1)
+    tree.no = array_to_tree(arr, (index+1)*2)
+    return tree
 
 def load(file):
     f = open(savefile, 'r')
     arr = f.readlines()
-    return load_tree(arr)
+    tree = array_to_tree(arr)
+    return tree
 
 def save(arr):
     f = open(savefile, 'w')
