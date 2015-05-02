@@ -1,0 +1,1 @@
+{"root": {"content": "animal?", "no": null, "yes": {"content": "bark?", "no": {"content": "swims?", "no": {"content": "cat", "no": null, "yes": null}, "yes": {"content": "fish", "no": null, "yes": null}}, "yes": {"content": "dog", "no": null, "yes": null}}}}

@@ -1,5 +1,7 @@
 from pprint import pprint
-savefile = 'animals.txt'
+import json
+
+savefile = 'animals.json'
 
 # Question tree node
 class Node:
@@ -16,58 +18,35 @@ class Node:
     def __repr__(self):
         return self.content
 
-# returns tree as a string recursively
-def tree_to_string(root, count=0):
-    curr = root
-    if not curr:
-        return ""
-    left    = tree_to_string(curr.yes, count + 1)
-    right   = tree_to_string(curr.no, count + 1)
-    left    = "\n" + left.strip() if len(left) > 0 else left
-    right   = "\n" + right.strip() if len(right) > 0 else right
-    padding = ""
-    for i in range(count):
-        padding += "-"
-    return padding + curr.content.strip() + left + right
+def tree_to_map(node):
+    if node is None:
+        return None 
+    curr = {
+        'content': node.content,
+        'yes' : tree_to_map(node.yes),
+        'no' : tree_to_map(node.no)
+    }
+    return curr
 
-def tree_as_array(curr, arr=[], index=0):
-    pprint(arr)
-
-    if index < len(arr):
-        arr.extend([None]*(index-len(arr)))
-
-    if curr is None:
-        return arr
-        
-    arr.insert(index, curr)
-    tree_as_array(curr.yes, arr, (index+1)*2-1)
-    tree_as_array(curr.no, arr, (index+1)*2)
-
-    return arr
-
-def array_to_tree(arr, index=0):
-    if index > len(arr) -1 or arr[index] is '\n':
+def map_to_tree(node):
+    if node is None:
         return None
-    tree = Node(arr[index].strip())
-    tree.yes = array_to_tree(arr, (index+1)*2-1)
-    tree.no = array_to_tree(arr, (index+1)*2)
-    return tree
+    curr = Node(node["content"])
+    curr.yes = map_to_tree(node["yes"]) if "yes" in node else None
+    curr.no = map_to_tree(node["no"]) if "no" in node else None
+    return curr
 
-def load(file):
+def load():
     f = open(savefile, 'r')
-    arr = f.readlines()
-    tree = array_to_tree(arr)
-    return tree
+    return map_to_tree(json.loads(f.read())['root'])
 
-def save(arr):
+def save(root):
     f = open(savefile, 'w')
-    for node in arr:
-        line = node.content if node else "-"
-        f.write(line.strip() + "\n")
-    f.close()
+    root = {'root': tree_to_map(root)}
+    f.write(json.dumps(root))
 
 def start():
-    root = load(savefile)
+    root = load()
     while True:
         # start from root node, travel down tree
         curr        = root
@@ -108,8 +87,6 @@ def start():
             else:
                 prev.no     = new_node
 
-        save(tree_as_array(root, []))
-        # pprint(tree_as_array(root, []))
+        save(root)
 
 start()
-# root = load(savefile)
