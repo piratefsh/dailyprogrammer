@@ -1,3 +1,5 @@
+# Various playground methods
+
 from pprint import pprint
 from animal_guess import Node
 import json
