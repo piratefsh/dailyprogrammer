@@ -40,9 +40,9 @@ def tree_as_array(curr, arr=[], index=0):
     return arr
 
 def array_to_tree(arr, index=0):
-    if index >= len(arr) or arr[index] is '\n':
+    if index > len(arr) -1 or arr[index] is '\n':
         return None
-    tree = Node(arr[index])
+    tree = Node(arr[index].strip())
     tree.yes = array_to_tree(arr, (index+1)*2-1)
     tree.no = array_to_tree(arr, (index+1)*2)
     return tree
@@ -56,7 +56,7 @@ def load(file):
 def save(arr):
     f = open(savefile, 'w')
     for node in arr:
-        line = node.content if node else ""
+        line = node.content if node else "-"
         f.write(line.strip() + "\n")
     f.close()
 

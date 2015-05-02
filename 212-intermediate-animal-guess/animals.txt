@@ -1,4 +1,32 @@
 Are you thinking of an animal?
 barks?
+-
+Are you thinking of an animal?
+dog
+-
+-
+swims?
+barks?
+-
+Are you thinking of an animal?
+dog
+fish
+cat
+-
+-
+swims?
+barks?
+-
+Are you thinking of an animal?
+dog
+fish
+cat
+-
+-
+cat
+barks?
+-
 dog
 cat
+-
+-
