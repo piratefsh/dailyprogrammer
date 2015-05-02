@@ -13,11 +13,10 @@ class Node:
         if answer is 'y':
             return self.yes
         return self.no
-    def hasNext(self):
-        return self.yes or self.no
     def __repr__(self):
         return self.content
 
+# write tree as a nested map
 def tree_to_map(node):
     if node is None:
         return None 
@@ -28,6 +27,7 @@ def tree_to_map(node):
     }
     return curr
 
+# retrieve tree from nested map
 def map_to_tree(node):
     if node is None:
         return None
@@ -36,10 +36,12 @@ def map_to_tree(node):
     curr.no = map_to_tree(node["no"]) if "no" in node else None
     return curr
 
+# load from json
 def load():
     f = open(savefile, 'r')
     return map_to_tree(json.loads(f.read())['root'])
 
+# save to json
 def save(root):
     f = open(savefile, 'w')
     root = {'root': tree_to_map(root)}
@@ -53,14 +55,10 @@ def start():
         while True:
             prev     = curr
             response = input(curr.content)
-            
-            if curr is None:
-                print("Oops, no more questions for you")
-                exit()
-            
             curr     = curr.getNext(response)
             
-            if not curr.getNext(response):
+            # reached answer/leaf
+            if curr.getNext(response) is None:
                 break
          
         prev_response = response 
