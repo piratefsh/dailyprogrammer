@@ -53,7 +53,13 @@ def start():
         while True:
             prev     = curr
             response = input(curr.content)
+            
+            if curr is None:
+                print("Oops, no more questions for you")
+                exit()
+            
             curr     = curr.getNext(response)
+            
             if not curr.getNext(response):
                 break
          
