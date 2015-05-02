@@ -1,7 +1,4 @@
-Are you thinking of an animal? 
-barks? 
--
+Are you thinking of an animal?
+barks?
 dog
-swims? 
-fish
 cat

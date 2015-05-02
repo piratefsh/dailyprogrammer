@@ -1,3 +1,4 @@
+from pprint import pprint
 savefile = 'animals.txt'
 
 # Question tree node
@@ -12,29 +13,34 @@ class Node:
         return self.no
     def hasNext(self):
         return self.yes or self.no
+    def __repr__(self):
+        return self.content
 
 # returns tree as a string recursively
 def tree_to_string(root, count=0):
     curr = root
     if not curr:
         return ""
-    left    = tree_to_string(curr.getNext('y'), count + 1)
-    right   = tree_to_string(curr.getNext('n'), count + 1)
-    left    = "\n" + left if len(left) > 0 else left
-    right   = "\n" + right if len(right) > 0 else right
+    left    = tree_to_string(curr.yes, count + 1)
+    right   = tree_to_string(curr.no, count + 1)
+    left    = "\n" + left.strip() if len(left) > 0 else left
+    right   = "\n" + right.strip() if len(right) > 0 else right
     padding = ""
     for i in range(count):
         padding += "-"
-    return padding + curr.content + left + right
+    return padding + curr.content.strip() + left + right
 
-def tree_as_array(curr):
+def tree_as_array(curr, arr=[], index=0):
     if not curr:
-        return []
-    arr = [curr] + tree_as_array(curr.yes) + tree_as_array(curr.no)
+        return arr
+    arr.insert(index, curr)
+    tree_as_array(curr.yes, arr, (index+1)*2-1)
+    tree_as_array(curr.no, arr, (index+1)*2)
+
     return arr
 
 def array_to_tree(arr, index=0):
-    if index >= len(arr):
+    if index >= len(arr) or arr[index] is '\n':
         return None
     tree = Node(arr[index])
     tree.yes = array_to_tree(arr, (index+1)*2-1)
@@ -56,8 +62,8 @@ def save(arr):
 
 def start():
     root = load(savefile)
-    print(tree_to_string(root))
     while True:
+        print(tree_to_string(root))
         # start from root node, travel down tree
         curr        = root
         while True:
