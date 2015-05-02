@@ -47,6 +47,7 @@ def save(root):
     root = {'root': tree_to_map(root)}
     f.write(json.dumps(root))
 
+# start game
 def start():
     root = load()
     while True:
@@ -54,7 +55,7 @@ def start():
         curr        = root
         while True:
             prev     = curr
-            response = input(curr.content)
+            response = input(curr.content + ' ')
             curr     = curr.getNext(response)
             
             # reached answer/leaf
