@@ -1,5 +1,4 @@
-# Tree implementation
-
+# Task: Depth-first searcher
 class Node():
     def __init__(self, id):
         self.id = id
@@ -8,8 +7,8 @@ class Node():
     def add_child(self, node):
         self.children.append(node)
 
-
-    
+    def __repr__(self):
+        return self.id
 
 class Tree():
     def __init__(self):
@@ -31,7 +30,7 @@ class Tree():
 
         # found
         if curr.id is target_id:
-            return target_id
+            return curr
 
         # recursively check children subtree
         for child in curr.children:
@@ -42,19 +41,10 @@ class Tree():
         # no match in subtree
         return None
 
-    def bfs(self, target_id):
-        curr = self.root
-        children = [] + curr.children
-        while len(children) > 0:
-            curr = children[0]
-            if curr.id is target_id:
-                return target_id
-            children.extend(curr.children)
-
     # recursively print tree
     def to_string(self, curr, count=0):
         indent = "-" * count
-        curr_string = "\n" + indent + curr.id
+        curr_string = "\n" + indent + str(curr)
         for child in curr.children:
             curr_string += self.to_string(child, count + 1)
         return curr_string
@@ -75,6 +65,5 @@ def main():
 
     print(tree)
     print(tree.dfs('g'))
-    print(tree.bfs('g'))
 
 main()
