@@ -1,3 +1,5 @@
+# Tree implementation
+
 class Node():
     def __init__(self, id):
         self.id = id
@@ -11,7 +13,7 @@ class Tree():
     def __init__(self):
         self.root = None
 
-    # add node to tree, is root if parent not specified
+    # add node to tree. node is root if parent not specified
     def add(self, node_id, parent=None):
         node = Node(node_id)
         if parent is None:
@@ -32,9 +34,9 @@ class Tree():
         # recursively check children subtree
         for child in curr.children:
             found = self.dfs(target_id, child)
-            if found is not None: 
+            if found: 
                 return found
-                
+
         # no match in subtree
         return None
 
