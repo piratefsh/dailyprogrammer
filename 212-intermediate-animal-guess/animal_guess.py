@@ -78,7 +78,7 @@ def start():
             new_question    = input('What is a question that distinguishes %s from %s? ' % (new_animal, guessed_animal))
             new_animal_response = input('What would the answer be for %s? ' % new_animal)
 
-            # add new question
+            # create new question
             new_node = Node(new_question + " ")
             if new_animal_response is 'y':
                 new_node.yes    = Node(new_animal)
@@ -87,6 +87,7 @@ def start():
                 new_node.no     = Node(new_animal)
                 new_node.yes    = curr
 
+            # add in place of wrongly guessed answer
             if prev_response is 'y':
                 prev.yes    = new_node
             else:
