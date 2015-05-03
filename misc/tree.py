@@ -7,6 +7,8 @@ class Node():
     
     def add_child(self, node):
         self.children.append(node)
+
+
     
 
 class Tree():
@@ -40,6 +42,15 @@ class Tree():
         # no match in subtree
         return None
 
+    def bfs(self, target_id):
+        curr = self.root
+        children = [] + curr.children
+        while len(children) > 0:
+            curr = children[0]
+            if curr.id is target_id:
+                return target_id
+            children.extend(curr.children)
+
     # recursively print tree
     def to_string(self, curr, count=0):
         indent = "-" * count
@@ -64,5 +75,6 @@ def main():
 
     print(tree)
     print(tree.dfs('g'))
+    print(tree.bfs('g'))
 
 main()
