@@ -1,4 +1,4 @@
-import re, sys
+import re
 
 input = ['0xF5', '0xB3', '0xE4', '0xBBBB', '0xA0C9', '0xBEF0FF']
 
@@ -31,11 +31,9 @@ ones = {
 }
 for hex in input:
     parts = re.findall('([A-F0-9]{2})', re.split('0x', hex)[1])
-    sys.stdout.write(hex + ' ')
+    print(hex + ' ', end="")
     for i, part in enumerate(parts):
-        if part is None: 
-            continue
         pre = '' if i < 1 else 'bitey '
         padding = '' if part[1] is '0' else ' '
-        sys.stdout.write(pre + tens[part[0]] + '-' + ones[part[1]] + padding)
+        print(pre + tens[part[0]] + '-' + ones[part[1]] + padding, end="")
     print()
