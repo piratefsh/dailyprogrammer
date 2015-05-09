@@ -9,11 +9,10 @@ def roll():
     return int(math.floor(random.random() * 6 + 1))
 
 def track_str(track):
-    t = ''
-    for slot in track[:-1]:
+    t = '|'
+    for slot in track:
         t += slot + '|'
-    t += track[len(track)-1] + '\n'
-    return t
+    return t + '\n'
 
 def print_tracks(tracks):
     all_tracks = ''
@@ -24,22 +23,25 @@ def print_tracks(tracks):
 
 def move(track, steps, char):
     curr = track.index(char)
-    if (curr+steps) < len(track):
+    track[curr] = ' '
+    if (curr + steps) < len(track):
         track[curr + steps] = char 
-        track[curr] = ' '
         return True
     else:
-        track[len(track) -1] = char 
+        track[len(track) - 1] = char 
         return False
 
 print("\n")
-
+winner = ''
 while True:
+    print_tracks([track_a, track_b])
     if not move(track_a, roll(), 'a'):
-        print('A Wins!')
+        winner = 'a'
         break
     if not move(track_b, roll(), 'b'):
-        print('B Wins!')
+        winner = 'b'
         break
     time.sleep(1)
-    print_tracks([track_a, track_b])
+
+print_tracks([track_a, track_b])
+print('%s wins!' % winner)
