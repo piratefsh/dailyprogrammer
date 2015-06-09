@@ -39,7 +39,4 @@ def is_english(message):
 for m in messages:
 	message = filter(lambda a: a != "", m.strip().split(' '))
 	decoded = decode(message)
-	if is_english(decoded):
-		print(decoded)
-	else:
-		print('invalid')
+	print(decoded)
