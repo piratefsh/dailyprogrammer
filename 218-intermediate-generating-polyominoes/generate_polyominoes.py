@@ -5,14 +5,12 @@ from copy import deepcopy
 size = int(sys.argv[1])
 init = Polyomino(size).set((0, 0))
 
-
 def find_polyominoes(poly, tiles_left, polys):
-	# if no more tiles left to add
+	# if no more tiles left to add, return
 	if tiles_left == 1:
-		#return 
 		return
 
-	# else, if still have tiles, 
+	# else, if still have tiles
 	else:
 		# decrement tiles
 		tiles_left -= 1
@@ -30,11 +28,8 @@ def find_polyominoes(poly, tiles_left, polys):
 			find_polyominoes(p, tiles_left, polys)
 
 
-# init.set(2, 3)
-# print(init)
-# print(init.open_sides_of_last_added())
-
 polys = []
 find_polyominoes(init, size, polys)
+
 for p in polys:
 	print(p)
