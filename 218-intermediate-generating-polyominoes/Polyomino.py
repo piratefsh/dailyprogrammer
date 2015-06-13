@@ -7,8 +7,8 @@ class Polyomino():
 	def __init__(self, size):
 		self.size		= size
 		self.grid 		= [ [False] * size for i in range(size)]
-		self.last_added = (None, None) # coordinates of last tile that was set 
 		self.tiles 		= 0 # number of tiles added
+		self.coords 	= []
 
 	# Returns coordinates of all open sides 
 	def open_sides(self):
@@ -36,8 +36,8 @@ class Polyomino():
 	# Adds tile at given coordinates
 	def set(self, coords):
 		self.grid[coords[0]][coords[1]] = True
-		self.last_added = coords
 		self.tiles += 1
+		self.coords.append(coords)
 		return self
 
 	def identical(self, other):
@@ -49,13 +49,8 @@ class Polyomino():
 					same = False
 		return same
 
-	def get_coords(self):
-		coords = []
-		for x,row in enumerate(self.grid):
-			for y,cell in enumerate(row):
-				if self.grid[x][y]:
-					coords.append((x, y))
-		return coords
+	def normalize(self):
+		return True
 
 	def reflected(self, other):
 		# for each this(x,y), other(y,x) has the same value
@@ -93,10 +88,9 @@ class Polyomino():
 			coord[0][0] += min_x
 			coord[1][0] += min_y
 			rotated.set((coord[0][0], coord[1][0]))
-			
-		overlap = [coord_self for coord_self in self.get_coords() if coord_self in rotated.get_coords()]
+		overlap = [coord_self for coord_self in self.coords if coord_self in rotated.coords]
 		
-		return len(overlap) == len(rotated.get_coords()) or self.reflected(rotated)
+		return len(overlap) == len(rotated.coords) or self.reflected(rotated)
 
 	# Check equality of this poly to another
 	def __eq__(self, other):
