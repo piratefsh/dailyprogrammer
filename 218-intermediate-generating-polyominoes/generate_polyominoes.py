@@ -9,7 +9,8 @@ def find_polyominoes(poly, tiles_left, polys):
 	# if no more tiles left to add, return
 	if tiles_left == 1:
 		# add to array
-		polys.append(poly)
+		if poly not in polys:
+			polys.append(poly)
 		return
 	# else, if still have tiles
 	else:
