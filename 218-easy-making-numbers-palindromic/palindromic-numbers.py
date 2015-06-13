@@ -1,5 +1,4 @@
 import sys
-
 input_num 	= sys.argv[1]
 num 		= input_num
 steps 		= 0
