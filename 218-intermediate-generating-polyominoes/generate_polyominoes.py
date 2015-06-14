@@ -3,7 +3,8 @@ from Polyomino import Polyomino
 from copy import deepcopy
 
 size = int(sys.argv[1])
-init = Polyomino(size).set((0, 0))
+center = size/2-1
+init = Polyomino(size).set((center, center))
 
 def find_polyominoes(poly, tiles_left, polys):
 	# if no more tiles left to add, return
@@ -16,7 +17,6 @@ def find_polyominoes(poly, tiles_left, polys):
 	else:
 		# decrement tiles
 		tiles_left -= 1
-
 		# for each open side of last added tile,
 		for side in poly.open_sides():
 			# duplicate current poly add new tile at side
@@ -28,18 +28,22 @@ def find_polyominoes(poly, tiles_left, polys):
 polys = []
 find_polyominoes(init, size, polys)
 
-print(len(polys))
-
-print("--------------------------")
-
-def remove_dupes(polys):
-	clean = []
-	for p in polys:
-		if p not in clean:
-			clean.append(p)
-	return clean
-polys = remove_dupes(polys)
-
 for p in polys:
 	print(p)
+
 print(len(polys))
+
+# test_case = [(0, 0), (0, 1), (0, 2), (1, 1), (2, 1), (3, 1)]
+# test_case = [(0, 0), (1, 0), (1, 1), (1, 2), (1, 3), (2, 1)]
+# test_case = [(0, 1), (1, 1), (2, 0), (2, 1), (3, 0), (4, 0)]
+# test_case = [(0, 1), (1, 0), (1, 1), (1, 2), (1, 3), (2, 2)]
+# t = Polyomino(size)
+# for c in test_case:
+# 	t.set(c)
+
+#print(t)
+
+# for p in polys:
+# 	if p == t:
+# 		print(p)
+

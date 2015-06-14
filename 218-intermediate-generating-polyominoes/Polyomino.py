@@ -41,7 +41,7 @@ class Polyomino():
 		return self
 
 	def identical(self, other):
-		# Check if straight out identical
+		# Check if straight out identical 
 		same = True
 		for x,row in enumerate(self.grid):
 			for y,cell in enumerate(row):
@@ -50,7 +50,14 @@ class Polyomino():
 		return same
 
 	def normalize(self):
-		return True
+		# # get smallest x and smallest y
+		min_x = int(min(self.coords, key=lambda x: x[0])[0])
+		min_y = int(min(self.coords, key=lambda x: x[1])[1])
+		self.coords = [(c[0]-min_x, c[1]-min_y) for c in self.coords]
+		for x,row in enumerate(self.grid):
+			for y,cell in enumerate(row):
+				self.grid[x][y] = True if (x, y) in self.coords else False
+		return self
 
 	def reflected(self, other):
 		# for each this(x,y), other(y,x) has the same value
@@ -76,17 +83,17 @@ class Polyomino():
 					mult = rotation * np.matrix("%d;%d" % (x,y)) 
 					rotated_coords.append(mult)
 				
-		# get lowest negative values for x and y 
-		min_x = int(math.fabs(int(min(rotated_coords, key=lambda x: x[0][0])[0][0])))
-		min_y = int(math.fabs(int(min(rotated_coords, key=lambda x: x[1][0])[1][0])))
+		# get lowest values for x and y 
+		min_x = int(min(rotated_coords, key=lambda x: x[0][0])[0][0])
+		min_y = int(min(rotated_coords, key=lambda x: x[1][0])[1][0])
 
 		# create rotated polyamino
 		rotated = Polyomino(other.size)
 
-		# normalize
+		# normalize. have to normalize before setting coords as there are negative values
 		for coord in rotated_coords:
-			coord[0][0] += min_x
-			coord[1][0] += min_y
+			coord[0][0] += -min_x
+			coord[1][0] += -min_y
 			rotated.set((coord[0][0], coord[1][0]))
 		overlap = [coord_self for coord_self in self.coords if coord_self in rotated.coords]
 		
@@ -94,6 +101,10 @@ class Polyomino():
 
 	# Check equality of this poly to another
 	def __eq__(self, other):
+		# Normalize both
+		self.normalize()
+		other.normalize()
+		
 		# Check all possible transformations
 		return self.identical(other) or self.rotated_all(other) or self.reflected(other) 
 
