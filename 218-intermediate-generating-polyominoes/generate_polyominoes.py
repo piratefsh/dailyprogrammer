@@ -10,8 +10,7 @@ def find_polyominoes(poly, tiles_left, polys):
 	# if no more tiles left to add, return
 	if tiles_left == 1:
 		# add to array
-		if poly not in polys:
-			polys.append(poly)
+		polys.append(poly)
 		return
 	# else, if still have tiles
 	else:
@@ -28,22 +27,12 @@ def find_polyominoes(poly, tiles_left, polys):
 polys = []
 find_polyominoes(init, size, polys)
 
+cleared = []
 for p in polys:
-	print(p)
+	if p not in cleared:
+		cleared.append(p)
 
-print(len(polys))
+for c in cleared:
+	print c
 
-# test_case = [(0, 0), (0, 1), (0, 2), (1, 1), (2, 1), (3, 1)]
-# test_case = [(0, 0), (1, 0), (1, 1), (1, 2), (1, 3), (2, 1)]
-# test_case = [(0, 1), (1, 1), (2, 0), (2, 1), (3, 0), (4, 0)]
-# test_case = [(0, 1), (1, 0), (1, 1), (1, 2), (1, 3), (2, 2)]
-# t = Polyomino(size)
-# for c in test_case:
-# 	t.set(c)
-
-#print(t)
-
-# for p in polys:
-# 	if p == t:
-# 		print(p)
-
+print(len(cleared))
