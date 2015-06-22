@@ -6,19 +6,12 @@ size = int(sys.argv[1])
 center = size/2-1
 init = Polyomino(size).set((center, center))
 
-def exists(this, polys):
-	for p in polys:
-		if this == p:
-			return True
-	return False
-
 def find_polyominoes(poly, tiles_left, polys):
 	# if no more tiles left to add, return
 	if tiles_left == 1:
 		# add to array
 		norm = poly.normalized()
-		if not exists(norm, polys):
-			polys.append(norm)
+		polys.append(norm)
 		return
 	# else, if still have tiles
 	else:
@@ -32,9 +25,14 @@ def find_polyominoes(poly, tiles_left, polys):
 			# find more polyominoes with new polyomino and add those to array
 			find_polyominoes(p, tiles_left, polys)
 polys = []
+unique = []
+
 find_polyominoes(init, size, polys)
 
-for p in polys:
-	print(p)
-print(len(polys))
+for p in set(polys):
+	if p not in unique:
+		unique.append(p)
+		print(p)
+
+print(len(unique))
 

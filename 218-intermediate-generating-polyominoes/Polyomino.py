@@ -111,6 +111,9 @@ class Polyomino():
 				return True
 		return False
 
+	def __hash__(self):
+		return hash(repr(self))
+
 	def __repr__(self):
 		string = ""
 		for row in self.grid:
