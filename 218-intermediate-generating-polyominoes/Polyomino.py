@@ -39,27 +39,26 @@ class Polyomino():
 
 	# add tiles for given coords
 	def set_coords(self, coords):
-		for c in coords:
-			self.set(c)
+		self.coords = set(coords)
+		self.tiles = len(coords)
 		return self
 
 	def identical(self, other):
 		return self.coords == other.coords
 
-	# normalize self
-	def normalize(self):
+	def normalized_coords(self):
 		# get smallest x and smallest y
 		min_x = int(min(self.coords, key=lambda x: x[0])[0])
 		min_y = int(min(self.coords, key=lambda x: x[1])[1])
-		normalized_coords = [(c[0]-min_x, c[1]-min_y) for c in self.coords]
-		self.set_coords(normalized_coords)
+		return [(c[0]-min_x, c[1]-min_y) for c in self.coords]
+
+	# normalize self
+	def normalize(self):
+		self.set_coords(self.normalized_coords())
 		return self
 
 	def normalized(self):
-		# get smallest x and smallest y
-		min_x = int(min(self.coords, key=lambda x: x[0])[0])
-		min_y = int(min(self.coords, key=lambda x: x[1])[1])
-		normalized_coords = [(c[0]-min_x, c[1]-min_y) for c in self.coords]
+		normalized_coords = self.normalized_coords()
 		p = Polyomino(self.size).set_coords(normalized_coords)
 		return p
 
