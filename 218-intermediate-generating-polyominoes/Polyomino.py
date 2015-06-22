@@ -7,9 +7,8 @@ class Polyomino():
 	# which is sixe x size
 	def __init__(self, size):
 		self.size		= size
-		self.grid 		= [ [False] * size for i in range(size)]
 		self.tiles 		= 0 # number of tiles added
-		self.coords 	= []
+		self.coords 	= set()
 		self.incarnations = None
 
 	# Returns coordinates of all open sides 
@@ -34,9 +33,8 @@ class Polyomino():
 
 	# Adds tile at given coordinates
 	def set(self, coords):
-		self.grid[coords[0]][coords[1]] = True
 		self.tiles += 1
-		self.coords.append(coords)
+		self.coords.add(coords)
 		return self
 
 	# add tiles for given coords
@@ -46,7 +44,7 @@ class Polyomino():
 		return self
 
 	def identical(self, other):
-		return sorted(self.coords) == sorted(other.coords)
+		return self.coords == other.coords
 
 	# normalize self
 	def normalize(self):
@@ -54,7 +52,6 @@ class Polyomino():
 		min_x = int(min(self.coords, key=lambda x: x[0])[0])
 		min_y = int(min(self.coords, key=lambda x: x[1])[1])
 		normalized_coords = [(c[0]-min_x, c[1]-min_y) for c in self.coords]
-		self.grid = [ [False] * self.size for i in range(self.size)]
 		self.set_coords(normalized_coords)
 		return self
 
@@ -116,7 +113,10 @@ class Polyomino():
 
 	def __repr__(self):
 		string = ""
-		for row in self.grid:
+		grid = [ [False] * self.size for i in range(self.size)]
+		for coord in self.coords:
+			grid[coord[0]][coord[1]] = True
+		for row in grid:
 			for cell in row:
 				string += '# ' if cell else '. '
 			string += "\n"
