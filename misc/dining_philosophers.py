@@ -1,6 +1,7 @@
-import time
-import logging
+import time, logging, sys, random
 from threading import Thread, Lock
+
+# Configure logging
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] (%(threadName)-10s) %(message)s',)
 logging.getLogger().setLevel(logging.INFO)
 
@@ -16,8 +17,8 @@ class Philosopher(Thread):
 	"""
 
 	counter = 0
-	eat_time = 0.3
-	think_time = 0.2
+	eat_time = 1.0
+	think_time = 1.0
 
 	def __init__(self, left_fork, right_fork):
 		Thread.__init__(self)
@@ -55,7 +56,7 @@ class Philosopher(Thread):
 		Spend time eating
 		"""
 		logging.info(repr(self) + " is eating")
-		time.sleep(self.eat_time)
+		time.sleep(random.random() * self.eat_time)
 		return 
 
 	def release_forks(self):
@@ -74,7 +75,7 @@ class Philosopher(Thread):
 		Spend time thinking
 		"""
 		logging.info(repr(self) + " is thinking")
-		time.sleep(self.think_time)
+		time.sleep(random.random() * self.think_time)
 		return
 
 	def __repr__(self):
@@ -114,7 +115,7 @@ class Table():
 	"""
 
 def test():
-	num_philos = 3
+	num_philos = int(sys.argv[1])
 	philosophers = []
 	forks = [Fork() for _ in range(num_philos)]
 
@@ -122,7 +123,7 @@ def test():
 		right_index = 0 if i == num_philos - 1 else i + 1
 		p = Philosopher(left_fork=forks[i], right_fork=forks[right_index])
 		philosophers.append(p)
-		
+
 	map(lambda x: x.start(), philosophers)
 
 test()
