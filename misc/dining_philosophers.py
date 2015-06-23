@@ -1,6 +1,6 @@
 import time
 import logging
-from threading import Thread
+from threading import Thread, Lock
 logging.basicConfig(level=logging.INFO, format='[%(levelname)s] (%(threadName)-10s) %(message)s',)
 logging.getLogger().setLevel(logging.INFO)
 
@@ -16,21 +16,24 @@ class Philosopher(Thread):
 	"""
 
 	counter = 0
-	eat_time = 1
-	think_time = 0.5
+	eat_time = 0.3
+	think_time = 0.2
 
-	def __init__(self):
+	def __init__(self, left_fork, right_fork):
 		Thread.__init__(self)
 		self.id = Philosopher.counter
 		self.setName('Philosopher %d' % self.id)
 		Philosopher.counter += 1
 
+		# Forks
+		self.left = left_fork
+		self.right = right_fork
 
 	def run(self):
 		""" 
 		Think and eat forever
 		"""
-		for _ in range(10):
+		for _ in range(5):
 			self.get_forks()
 			self.eat()
 			self.release_forks()
@@ -40,7 +43,12 @@ class Philosopher(Thread):
 		"""
 		Get forks on right and left of Philosopher if available
 		"""
-		return 
+		logging.info('Waiting for fork %d' % self.left.id)
+		self.left.pickup()
+		logging.info('Picked up fork %d' % self.left.id)
+		logging.info('Waiting for fork %d' % self.right.id)
+		self.right.pickup()
+		logging.info('Picked up fork %d' % self.right.id)
 
 	def eat(self):
 		"""
@@ -54,7 +62,12 @@ class Philosopher(Thread):
 		"""
 		Return forks to their original places
 		"""
-		return 
+		if self.left.is_used():
+			self.left.putdown()
+			logging.info('Released fork %d' % self.left.id)
+		if self.right.is_used():
+			self.right.putdown()
+			logging.info('Released fork %d' % self.right.id)
 
 	def think(self):
 		"""
@@ -72,6 +85,28 @@ class Fork():
 	Fork is a shared resource among Philosophers. A Fork
 	can only be held by one Philosopher at a time
 	"""
+	counter = 0
+	timeout = 2 # in seconda
+
+	def __init__(self):
+		self.lock = Lock()
+		self.id = Fork.counter 
+		Fork.counter += 1
+
+	def is_used(self):
+		return self.lock.locked()
+
+	def pickup(self):
+		start = time.time()
+		got_lock = False
+		while time.time() - start < self.timeout and not got_lock:
+			got_lock = self.lock.acquire(0)
+		if not got_lock:
+			logging.error('Deadlock')
+			exit()
+
+	def putdown(self):
+		self.lock.release()
 
 class Table():
 	"""
@@ -79,7 +114,15 @@ class Table():
 	"""
 
 def test():
-	philos = [Philosopher(), Philosopher()]
-	map(lambda x: x.start() and x.join(), philos)
+	num_philos = 3
+	philosophers = []
+	forks = [Fork() for _ in range(num_philos)]
+
+	for i in range(num_philos):
+		right_index = 0 if i == num_philos - 1 else i + 1
+		p = Philosopher(left_fork=forks[i], right_fork=forks[right_index])
+		philosophers.append(p)
+		
+	map(lambda x: x.start(), philosophers)
 
 test()
