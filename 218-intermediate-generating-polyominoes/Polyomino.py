@@ -81,8 +81,7 @@ class Polyomino():
             rotated_reflections = sum(
                 map(lambda x: x.rotations(), reflections), [])
             incarnations = [
-                self.normalized()] + self.reflections()
-                + self.rotations() + rotated_reflections
+                self.normalized()] + self.reflections() + self.rotations() + rotated_reflections
             coords = [x.coords for x in incarnations]
             coords.sort(key=lambda x: str(sorted(list(x))))
             self.fingerprint = str(sorted(coords[0]))
