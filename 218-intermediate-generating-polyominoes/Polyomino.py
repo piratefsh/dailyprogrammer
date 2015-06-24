@@ -1,13 +1,13 @@
 import numpy as np
 import math
 import bisect
+from copy import deepcopy
 
 class Polyomino():
 	# Constructs a Polyomino on a canvas that can accomodate max size,
 	# which is sixe x size
 	def __init__(self, size):
 		self.size		= size
-		self.tiles 		= 0 # number of tiles added
 		self.coords 	= set()
 		self.incarnations = None
 
@@ -18,29 +18,27 @@ class Polyomino():
 			# check top, bottom, left, right
 			# if has top cell and top doesn't have tile 
 			x, y = c[0], c[1]
-			if x-1 >= 0 and (x-1,y) not in self.coords:
+			if (x-1,y) not in self.coords:
 				coords.append((x-1, y))
 
-			if x+1 < self.size and (x+1,y) not in self.coords:
+			if (x+1,y) not in self.coords:
 				coords.append((x+1, y))
 
-			if y-1 >= 0 and (x,y-1) not in self.coords:
+			if (x,y-1) not in self.coords:
 				coords.append((x, y-1))
 
-			if y+1 < self.size and (x,y+1) not in self.coords:
+			if (x,y+1) not in self.coords:
 				coords.append((x, y+1))
 		return coords
 
 	# Adds tile at given coordinates
 	def set(self, coords):
-		self.tiles += 1
 		self.coords.add(coords)
 		return self
 
 	# add tiles for given coords
 	def set_coords(self, coords):
 		self.coords = set(coords)
-		self.tiles = len(coords)
 		return self
 
 	def identical(self, other):
@@ -64,7 +62,7 @@ class Polyomino():
 
 	# get reflection of self
 	def reflections(self):
-		p = Polyomino(self.size).set_coords([(y,x) for x,y in self.coords])
+		p = Polyomino(self.size).set_coords([(y,x) for x,y in self.coords]).normalize()
 		return [p]
 		
 	# get possible rotations of self
@@ -79,19 +77,16 @@ class Polyomino():
 	# Check equality of this poly to another
 	def __eq__(self, other):
 		# Create and store possible incarnations of self
-		if self.incarnations is None:
-			reflections 		= self.reflections()
-			rotated_reflections = sum(map(lambda x: x.rotations(), reflections), [])
-			self.incarnations 	= [self] + self.reflections() + self.rotations() + rotated_reflections
+		reflections 		= self.reflections()
+		rotated_reflections = sum(map(lambda x: x.rotations(), reflections), [])
+		self.incarnations 	= [self.normalized()] + self.reflections() + self.rotations() + rotated_reflections
 
+		other = other.normalized()
 		# Check other against possible incarnations
 		for inc in self.incarnations:
 			if other.identical(inc):
 				return True
 		return False
-
-	def __hash__(self):
-		return hash(repr(self))
 
 	def __repr__(self):
 		string = ""
