@@ -109,11 +109,6 @@ class Fork():
 	def putdown(self):
 		self.lock.release()
 
-class Table():
-	"""
-	Table contains 5 Philosophers and 5 forks between them
-	"""
-
 def test():
 	num_philos = int(sys.argv[1])
 	philosophers = []

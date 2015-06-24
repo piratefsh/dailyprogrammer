@@ -48,8 +48,8 @@ class Polyomino():
 
 	def normalized_coords(self):
 		# get smallest x and smallest y
-		min_x = int(min(self.coords, key=lambda x: x[0])[0])
-		min_y = int(min(self.coords, key=lambda x: x[1])[1])
+		min_x = min(self.coords, key=lambda x: x[0])[0]
+		min_y = min(self.coords, key=lambda x: x[1])[1]
 		return [(c[0]-min_x, c[1]-min_y) for c in self.coords]
 
 	# normalize self
@@ -69,29 +69,20 @@ class Polyomino():
 		
 	# get possible rotations of self
 	def rotations(self):
-		rot90	= np.matrix("0, -1; 1, 0")
-		rot180	= np.matrix("-1, 0; 0, -1")
-		rot270	= np.matrix("0, 1; -1, 0")
-		return [self.rotate(rot90), self.rotate(rot180), self.rotate(rot270)]
+		return [self.rotate(1), self.rotate(2), self.rotate(3)]
 		
 	# get a given rotation of self
-	def rotate(self, rotation):
+	def rotate(self, num_times):
 		# get rotated coords
-		rotated_coords = []
-		for c in self.coords:
-			mult = rotation * np.matrix("%d;%d" % (c[0],c[1])) 
-			rotated_coords.append(mult)
-				
-		# get lowest values for x and y 
-		min_x = int(min(rotated_coords, key=lambda x: x[0][0])[0][0])
-		min_y = int(min(rotated_coords, key=lambda x: x[1][0])[1][0])
-
+		rotated_coords = self.coords
+		for _ in range(num_times):
+			rotated_coords = [(-y,x) for x,y in rotated_coords]
+		
 		# create rotated polyamino
-		rotated = Polyomino(self.size)
+		rotated = Polyomino(self.size).set_coords(rotated_coords).normalize()
 
-		# normalize. have to normalize before setting coords as there are negative values
-		rotated.set_coords([(int(c[0][0])-min_x, int(c[1][0])-min_y) for c in rotated_coords])
 		return rotated
+
 
 	# Check equality of this poly to another
 	def __eq__(self, other):
