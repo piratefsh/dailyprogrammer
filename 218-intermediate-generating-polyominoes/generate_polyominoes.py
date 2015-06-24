@@ -29,11 +29,7 @@ polys = []
 unique = []
 
 find_polyominoes(init, size, polys)
-shallow = set(polys)
-counter = 0
-print len(shallow)
-for p in shallow:
-	counter += 1
+for p in set(polys):
 	if p not in unique:
 		unique.append(p)
 		print(p)
