@@ -69,17 +69,12 @@ class Polyomino():
 		
 	# get possible rotations of self
 	def rotations(self):
-		return [self.rotate(1), self.rotate(2), self.rotate(3)]
-		
-	# get a given rotation of self
-	def rotate(self, num_times):
-		# get rotated coords
+		rotations = []
 		rotated_coords = self.coords
-		for _ in range(num_times):
+		for _ in range(3):
 			rotated_coords = [(-y,x) for x,y in rotated_coords]
-		
-		# create rotated polyamino
-		return Polyomino(self.size).set_coords(rotated_coords).normalize()
+			rotations.append(Polyomino(self.size).set_coords(rotated_coords).normalize())
+		return rotations
 
 	# Check equality of this poly to another
 	def __eq__(self, other):
@@ -100,8 +95,8 @@ class Polyomino():
 
 	def __repr__(self):
 		string = ""
-		for x in grid:
-			for y in row:
+		for x in range(self.size):
+			for y in range(self.size):
 				string += '# ' if (x,y) in self.coords else '. '
 			string += "\n"
 		return string
