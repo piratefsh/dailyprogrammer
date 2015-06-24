@@ -50,7 +50,7 @@ class Polyomino():
 		# get smallest x and smallest y
 		min_x = min(self.coords, key=lambda x: x[0])[0]
 		min_y = min(self.coords, key=lambda x: x[1])[1]
-		return [(c[0]-min_x, c[1]-min_y) for c in self.coords]
+		return [(x-min_x, y-min_y) for x,y in self.coords]
 
 	# normalize self
 	def normalize(self):
@@ -64,7 +64,7 @@ class Polyomino():
 
 	# get reflection of self
 	def reflections(self):
-		p = Polyomino(self.size).set_coords([(c[1], c[0]) for c in self.coords])
+		p = Polyomino(self.size).set_coords([(y,x) for x,y in self.coords])
 		return [p]
 		
 	# get possible rotations of self

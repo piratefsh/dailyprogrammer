@@ -11,7 +11,7 @@ def find_polyominoes(poly, tiles_left, polys):
 	if tiles_left == 1:
 		# add to array
 		poly.normalize()
-		polys.append(norm)
+		polys.append(poly)
 		return
 	# else, if still have tiles
 	else:
@@ -24,12 +24,16 @@ def find_polyominoes(poly, tiles_left, polys):
 			p.set(side)
 			# find more polyominoes with new polyomino and add those to array
 			find_polyominoes(p, tiles_left, polys)
+
 polys = []
 unique = []
 
 find_polyominoes(init, size, polys)
-
-for p in set(polys):
+shallow = set(polys)
+counter = 0
+print len(shallow)
+for p in shallow:
+	counter += 1
 	if p not in unique:
 		unique.append(p)
 		print(p)
