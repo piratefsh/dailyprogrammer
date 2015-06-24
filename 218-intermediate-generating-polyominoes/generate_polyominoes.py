@@ -3,14 +3,12 @@ from Polyomino import Polyomino
 
 def gen(n, size):
     if n == 1:
-        center = size/2
-        return [Polyomino(size).set((center, center))]
+        return [Polyomino(size).set((0, 0))]
     else:
         polys = []
         prev = gen(n-1, size)
         for p in prev:
-            enlarge = Polyomino(n).set_coords(p.coords)
-            for side in enlarge.open_sides():
+            for side in p.open_sides():
                 new = Polyomino(n).set_coords(p.coords)
                 new.set(side)
                 if new not in polys:

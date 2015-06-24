@@ -10,33 +10,31 @@ class Polyomino():
 		self.size		= size
 		self.coords 	= set()
 		self.incarnations = None
+		self.fingerprint = None
 
 	# Returns coordinates of all open sides 
+
+	def has_tile(coord):
+		return coord in self.coords
+
 	def open_sides(self):
 		coords = []
 		for c in self.coords:
-			# check top, bottom, left, right
-			# if has top cell and top doesn't have tile 
 			x, y = c[0], c[1]
 			if (x-1,y) not in self.coords:
 				coords.append((x-1, y))
-
 			if (x+1,y) not in self.coords:
 				coords.append((x+1, y))
-
 			if (x,y-1) not in self.coords:
 				coords.append((x, y-1))
-
 			if (x,y+1) not in self.coords:
 				coords.append((x, y+1))
 		return coords
 
-	# Adds tile at given coordinates
 	def set(self, coords):
 		self.coords.add(coords)
 		return self
 
-	# add tiles for given coords
 	def set_coords(self, coords):
 		self.coords = set(coords)
 		return self
@@ -45,7 +43,6 @@ class Polyomino():
 		return self.coords == other.coords
 
 	def normalized_coords(self):
-		# get smallest x and smallest y
 		min_x = min(self.coords, key=lambda x: x[0])[0]
 		min_y = min(self.coords, key=lambda x: x[1])[1]
 		return [(x-min_x, y-min_y) for x,y in self.coords]
@@ -55,6 +52,7 @@ class Polyomino():
 		self.set_coords(self.normalized_coords())
 		return self
 
+	# return version of normalized self
 	def normalized(self):
 		normalized_coords = self.normalized_coords()
 		p = Polyomino(self.size).set_coords(normalized_coords)
@@ -74,19 +72,22 @@ class Polyomino():
 			rotations.append(Polyomino(self.size).set_coords(rotated_coords).normalize())
 		return rotations
 
+	def get_fingerprint(self):
+		if self.fingerprint is None:
+			reflections 		= self.reflections()
+			rotated_reflections = sum(map(lambda x: x.rotations(), reflections), [])
+			incarnations 	= [self.normalized()] + self.reflections() + self.rotations() + rotated_reflections
+			coords = [x.coords for x in incarnations]
+			coords.sort(key=lambda x: str(sorted(list(x))))
+			self.fingerprint = coords[0]
+		return self.fingerprint
+
 	# Check equality of this poly to another
 	def __eq__(self, other):
-		# Create and store possible incarnations of self
-		reflections 		= self.reflections()
-		rotated_reflections = sum(map(lambda x: x.rotations(), reflections), [])
-		self.incarnations 	= [self.normalized()] + self.reflections() + self.rotations() + rotated_reflections
+		return self.get_fingerprint() == other.get_fingerprint()
 
-		other = other.normalized()
-		# Check other against possible incarnations
-		for inc in self.incarnations:
-			if other.identical(inc):
-				return True
-		return False
+	# def __hash__(self):
+	# 	return hash(repr(self))
 
 	def __repr__(self):
 		string = ""
