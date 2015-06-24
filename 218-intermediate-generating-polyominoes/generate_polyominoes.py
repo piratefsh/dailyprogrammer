@@ -1,6 +1,7 @@
 import sys
 from Polyomino import Polyomino
 
+
 def gen(n, size):
     if n == 1:
         return set([Polyomino(size).set((0, 0))])
@@ -16,13 +17,8 @@ def gen(n, size):
 
 size = int(sys.argv[1])
 polys = gen(size, size)
+
 for p in polys:
     print p.normalize()
 
 print(len(polys))
-
-
-
-
- 
-
