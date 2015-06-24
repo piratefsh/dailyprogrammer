@@ -10,7 +10,7 @@ def find_polyominoes(poly, tiles_left, polys):
 	# if no more tiles left to add, return
 	if tiles_left == 1:
 		# add to array
-		norm = poly.normalized()
+		poly.normalize()
 		polys.append(norm)
 		return
 	# else, if still have tiles
