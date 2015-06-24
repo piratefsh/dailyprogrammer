@@ -79,10 +79,7 @@ class Polyomino():
 			rotated_coords = [(-y,x) for x,y in rotated_coords]
 		
 		# create rotated polyamino
-		rotated = Polyomino(self.size).set_coords(rotated_coords).normalize()
-
-		return rotated
-
+		return Polyomino(self.size).set_coords(rotated_coords).normalize()
 
 	# Check equality of this poly to another
 	def __eq__(self, other):
@@ -103,11 +100,8 @@ class Polyomino():
 
 	def __repr__(self):
 		string = ""
-		grid = [ [False] * self.size for i in range(self.size)]
-		for coord in self.coords:
-			grid[coord[0]][coord[1]] = True
-		for row in grid:
-			for cell in row:
-				string += '# ' if cell else '. '
+		for x in grid:
+			for y in row:
+				string += '# ' if (x,y) in self.coords else '. '
 			string += "\n"
 		return string
