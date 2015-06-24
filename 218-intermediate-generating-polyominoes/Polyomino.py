@@ -9,7 +9,6 @@ class Polyomino():
 	def __init__(self, size):
 		self.size		= size
 		self.coords 	= set()
-		self.incarnations = None
 		self.fingerprint = None
 
 	# Returns coordinates of all open sides 
