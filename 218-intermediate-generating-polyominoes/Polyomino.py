@@ -78,15 +78,15 @@ class Polyomino():
 			incarnations 	= [self.normalized()] + self.reflections() + self.rotations() + rotated_reflections
 			coords = [x.coords for x in incarnations]
 			coords.sort(key=lambda x: str(sorted(list(x))))
-			self.fingerprint = coords[0]
+			self.fingerprint = str(sorted(coords[0]))
 		return self.fingerprint
 
 	# Check equality of this poly to another
 	def __eq__(self, other):
 		return self.get_fingerprint() == other.get_fingerprint()
 
-	# def __hash__(self):
-	# 	return hash(repr(self))
+	def __hash__(self):
+		return hash(self.get_fingerprint())
 
 	def __repr__(self):
 		string = ""

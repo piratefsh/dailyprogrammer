@@ -3,16 +3,15 @@ from Polyomino import Polyomino
 
 def gen(n, size):
     if n == 1:
-        return [Polyomino(size).set((0, 0))]
+        return set([Polyomino(size).set((0, 0))])
     else:
-        polys = []
+        polys = set()
         prev = gen(n-1, size)
         for p in prev:
             for side in p.open_sides():
                 new = Polyomino(n).set_coords(p.coords)
                 new.set(side)
-                if new not in polys:
-                    polys.append(new)
+                polys.add(new)
         return polys
 
 size = int(sys.argv[1])
