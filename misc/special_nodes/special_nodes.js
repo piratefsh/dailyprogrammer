@@ -16,7 +16,6 @@ function processData(input) {
 
     var graph = make_graph(edges, special_nodes);
 
-    var shortest_dists = {};
     for (var s in graph) {
         // distances to specials
         var s = shortest_path(s, graph, special_nodes);
