@@ -10,41 +10,45 @@ function processData(input) {
         n_edges = parseInt(_n[1]);
 
     var edges = _lines.slice(1, n_edges + 1);
-    var special_nodes = _lines[_lines.length-1].split(' ').filter(function(e){return e && e.length > 0});
+    var special_nodes = _lines[_lines.length - 1].split(' ').filter(function(e) {
+        return e && e.length > 0
+    });
 
     var graph = make_graph(edges, special_nodes);
 
     var shortest_dists = {};
-    for(var s in graph){
+    for (var s in graph) {
         // distances to specials
         var s = shortest_path(s, graph, special_nodes);
         console.log(s);
     }
 }
 
-function shortest_path(source, graph, special_nodes){
+function shortest_path(source, graph, special_nodes) {
     // priority queue for unvisited nodes
     initialize_graph(graph, source);
 
-    var Q = Object.keys(graph); 
+    var Q = Object.keys(graph);
 
-    while(Q.length > 0){
-        Q.sort(function(a, b){return graph[a].distance - graph[b].distance});
+    while (Q.length > 0) {
+        Q.sort(function(a, b) {
+            return graph[a].distance - graph[b].distance
+        });
 
         var curr_id = Q.shift(),
             curr = graph[curr_id];
         curr.visited = true;
 
-        if (special_nodes.indexOf(curr_id) > -1){
+        if (special_nodes.indexOf(curr_id) > -1) {
             return curr.distance;
         }
 
-        for(var n in curr.neighbours){
+        for (var n in curr.neighbours) {
             var neighbour = graph[n];
 
-            if (!neighbour.visited){
+            if (!neighbour.visited) {
                 var alt_distance = curr.distance + curr.neighbours[n];
-                if (alt_distance < neighbour.distance){
+                if (alt_distance < neighbour.distance) {
                     neighbour.distance = alt_distance;
                     neighbour.path.push(curr_id);
                 }
@@ -55,9 +59,9 @@ function shortest_path(source, graph, special_nodes){
     return graph;
 }
 
-function initialize_graph(graph, source){
+function initialize_graph(graph, source) {
     // initialize all node to have empty path and max distance from src 
-    for (var node in graph){
+    for (var node in graph) {
         graph[node].visited = false;
         graph[node].path = [];
         graph[node].distance = Number.MAX_VALUE;
@@ -84,11 +88,11 @@ function add_neighbour(node, neighbour, weight, nodes, special_nodes) {
     if (node in nodes) {
         var ns = nodes[node].neighbours;
 
-        if(neighbour in ns){
+        if (neighbour in ns) {
             var curr_weight = ns[neighbour];
-            ns[neighbour] = weight < curr_weight? weight : curr_weight;
+            ns[neighbour] = weight < curr_weight ? weight : curr_weight;
         }
-        else{
+        else {
             ns[neighbour] = weight;
         }
     }
