@@ -64,23 +64,27 @@ def repeating_key_xor(data, key):
     # generate hex of chars
     keys = list(map(char_to_hex, list(key)))
 
-    for i,hex_char in enumerate(hex_chars):
-        # get xored char and append encrypted byte to encoded data 
-        xored = xor(hex_char, keys[i%len(key)])
-        encoded += xored
-        
-    return encoded 
+    # get xored char append encrypted byte to encoded data 
+    return "".join([xor(hex_char, keys[i%len(key)]) for i,hex_char in enumerate(hex_chars)])
 
+# helper functions
 def char_to_hex(c):
     return hex(ord(c))
 
 def string_to_hex(string):
-    return [hex(ord(c)) for c in string]
+    return [hex(ord(c))[2:] for c in string]
 
 def get_byte_array(data):
     if len(data) % 2 == 1:
         raise ValueError("Data is not even length string")
     return [data[i:i+2] for i in range(0, len(data), 2)]
+
+def hamming_distance(str1, str2):
+    hex1 = codecs.encode(str1.encode(), 'hex_codec')
+    hex2 = codecs.encode(str2.encode(), 'hex_codec')
+    xored = xor(hex1, hex2).zfill(len(str1))
+    bin_ver = bin(int(xored, 16))
+    return bin_ver.count('1')
 
 def test():
     # challenge 1
@@ -101,7 +105,7 @@ def test():
     for k, m in msg_decoded:
         print(k, m)
 
-    # interlude
+    # interlude 1
     assert get_byte_array('0100') == ['01', '00']
 
     # challenge 4 
@@ -111,6 +115,9 @@ def test():
 
     assert repeating_key_xor(msg_in_1, key) == msg_out_1
     # assert repeating_key_xor(msg_in_2, key) == msg_out_2
+
+    # interlude 2
+    assert hamming_distance('this is a test', 'wokka wokka!!!') == 37
 
     print('tests passed')
 
