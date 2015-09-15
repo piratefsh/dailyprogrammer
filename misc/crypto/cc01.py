@@ -11,16 +11,16 @@ def hex2base64(data):
 # challenge 2
 def xor(left, right):
     res = int(left, 16) ^ int(right, 16)
-    hexed = '{:x}'.format(res)
+    hexed = '{:02x}'.format(res)
     return hexed
 
 # challenge 3
 def decode_xor(encoded, key=None):
-    # if no key given, check for all possible keys from 1-127
+    # if no key given, check for all possible 128 ASCII characters
     if key is None:
 
         # generate possible keys
-        keys = (format(int('0', 16) + i, 'x') for i in range(1, 128))
+        keys = (format(int('0', 16) + i, 'x') for i in range(0, 128))
 
         # get keys that decode message to something alphanumeric
 
@@ -54,22 +54,63 @@ def decode_xor(encoded, key=None):
         return xor(encoded, encoded_key).zfill(len(encoded))
 
 
+# challenge 4
+def repeating_key_xor(data, key):
+    encoded = ""
+
+    # data to hex chars
+    hex_chars = string_to_hex(data)
+
+    # generate hex of chars
+    keys = list(map(char_to_hex, list(key)))
+
+    for i,hex_char in enumerate(hex_chars):
+        # get xored char and append encrypted byte to encoded data 
+        xored = xor(hex_char, keys[i%len(key)])
+        encoded += xored
+        
+    return encoded 
+
+def char_to_hex(c):
+    return hex(ord(c))
+
+def string_to_hex(string):
+    return [hex(ord(c)) for c in string]
+
+def get_byte_array(data):
+    if len(data) % 2 == 1:
+        raise ValueError("Data is not even length string")
+    return [data[i:i+2] for i in range(0, len(data), 2)]
+
 def test():
+    # challenge 1
     instr = '49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d'
     outstr = hex2base64(instr)
     assert 'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t' == outstr
 
+    # challenge 2
     left = '1c0111001f010100061a024b53535009181c'
     right = '686974207468652062756c6c277320657965'
-
     xored = '746865206b696420646f6e277420706c6179'
-
     assert xor(left, right) == xored
 
-    print('tests passed')
-
+    # challenge 3
     msg = '1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
     msg_decoded = decode_xor(msg)
 
     for k, m in msg_decoded:
         print(k, m)
+
+    # interlude
+    assert get_byte_array('0100') == ['01', '00']
+
+    # challenge 4 
+    msg_in_1 = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
+    msg_out_1 = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
+    key = 'ICE'
+
+    assert repeating_key_xor(msg_in_1, key) == msg_out_1
+    # assert repeating_key_xor(msg_in_2, key) == msg_out_2
+
+    print('tests passed')
+
