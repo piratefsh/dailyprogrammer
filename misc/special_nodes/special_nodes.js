@@ -1,4 +1,5 @@
 var util = require('util');
+var PriorityQueue = require('js-priority-queue');
 
 function processData(input) {
     //Enter your code here
@@ -19,7 +20,7 @@ function processData(input) {
     for (var s in graph) {
         // distances to specials
         var s = shortest_path(s, graph, special_nodes);
-        console.log(s);
+        // console.log(s);
     }
 }
 
@@ -27,14 +28,21 @@ function shortest_path(source, graph, special_nodes) {
     // priority queue for unvisited nodes
     initialize_graph(graph, source);
 
-    var Q = Object.keys(graph);
+    var keys = Object.keys(graph);
+
+    var Q = new PriorityQueue({
+        comparator: function(a, b) {
+            return this[a].distance - this[b].distance
+        }.bind(graph)
+    });
+
+    for(var k of keys){
+        Q.queue(k)
+    }
 
     while (Q.length > 0) {
-        Q.sort(function(a, b) {
-            return graph[a].distance - graph[b].distance
-        });
-
-        var curr_id = Q.shift(),
+        console.log(Q.peek())
+        var curr_id = Q.dequeue(),
             curr = graph[curr_id];
         curr.visited = true;
 
