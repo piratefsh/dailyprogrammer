@@ -9,8 +9,14 @@ def hex2base64(data):
     """
     challenge 1. returns string in hex encoded into base64
     """
-    return ba.b2a_base64(ba.unhexlify(data))[:-1].decode('utf-8')
+    return ba.b2a_base64(ba.unhexlify(data))[:-1]
 
+def base642hex(data):
+    return ba.hexlify(base64.b64decode(pad64(data)))
+
+def pad64(bytestring):
+    missing = len(bytestring) % 4 
+    return bytestring + b'=' * missing if missing else bytestring
 
 def xor(left, right):
     """
@@ -88,9 +94,24 @@ def repeating_key_xor(data, key):
     # get xored char append encrypted byte to encoded data
     return "".join([xor(hex_char, keys[i % len(key)]) for i, hex_char in enumerate(hex_chars)])
 
+
+def decode_repeating_key_xor(file):
+    # find keysize with min hd/keysize
+
+    # break text into keysize blocks
+
+    # transpose blocks???
+    return 
+
+def get_min_hamming_dist_keysizes(file, n):
+    keysizes = range(2, 40)
+    f = open(file, 'rb')
+    normalized_hammings = [(keysize, hamming_distance_bytes(base642hex(f.read(keysize)), base642hex(f.read(keysize)))/keysize)
+                             for keysize in keysizes]
+    normalized_hammings.sort()
+    return normalized_hammings[0:n]
+
 # helper functions
-
-
 def char_to_hex(c):
     return hex(ord(c))
 
@@ -108,14 +129,18 @@ def get_byte_array(data):
 def hamming_distance(str1, str2):
     hex1 = ba.hexlify(str1.encode())
     hex2 = ba.hexlify(str2.encode())
-    xored = xor(hex1, hex2)
+    return hamming_distance_bytes(hex1, hex2)
+
+def hamming_distance_bytes(bytechunk1, bytechunk2):
+    xored = xor(bytechunk1, bytechunk2)
     bin_ver = bin(int(xored, 16))
     return bin_ver.count('1')
+    
 
 def test():
     # challenge 1
     instr = '49276d206b696c6c696e6720796f757220627261696e206c696b65206120706f69736f6e6f7573206d757368726f6f6d'
-    outstr = hex2base64(instr)
+    outstr = hex2base64(instr).decode('utf-8')
     assert 'SSdtIGtpbGxpbmcgeW91ciBicmFpbiBsaWtlIGEgcG9pc29ub3VzIG11c2hyb29t' == outstr
 
     # challenge 2
@@ -143,5 +168,8 @@ def test():
 
     # interlude 2
     assert hamming_distance('this is a test', 'wokka wokka!!!') == 37
+
+    filename = 'cc06in.txt'
+    # print(get_min_hamming_dist_keysizes(filename, 3))
 
     print('tests passed')
