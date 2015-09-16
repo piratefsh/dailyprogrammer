@@ -92,9 +92,6 @@ def repeating_key_xor(data, key):
     """
     challenge 4: decodes xor-ed message with a repeating key
     """
-
-    encoded = ""
-
     # data to hex chars
     hex_chars = string_to_hex(data)
 
