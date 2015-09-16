@@ -54,11 +54,11 @@ def decode_xor(encoded):
         # try to decode that into utf-8
         try:
             decoded = decoded.decode('utf-8')
+            if is_english_kinda(decoded):
+                decoded_msgs.append((ba.unhexlify(k), decoded))
         except UnicodeDecodeError:
             pass
 
-        if is_english_kinda(decoded):
-            decoded_msgs.append((ba.unhexlify(k), decoded))
 
     # return decoded messages
     return decoded_msgs
