@@ -12,11 +12,17 @@ def hex2base64(data):
     return ba.b2a_base64(ba.unhexlify(data))[:-1]
 
 def base642hex(data):
-    return ba.hexlify(base64.b64decode(pad64(data)))
+    padded = pad64(data) 
+    print(padded)
+    try:
+        decoded64 = base64.b64decode(pad64(data))
+    except ba.Error:
+        return None
+    return ba.hexlify(decoded64)
 
 def pad64(bytestring):
-    missing = len(bytestring) % 4 
-    return bytestring + b'=' * missing if missing else bytestring
+    missing = 4 - len(bytestring) % 4 
+    return bytestring + b'=' * missing if missing > 0 else bytestring
 
 def xor(left, right):
     """
@@ -106,9 +112,18 @@ def decode_repeating_key_xor(file):
 def get_min_hamming_dist_keysizes(file, n):
     keysizes = range(2, 40)
     f = open(file, 'rb')
-    normalized_hammings = [(keysize, hamming_distance_bytes(base642hex(f.read(keysize)), base642hex(f.read(keysize)))/keysize)
-                             for keysize in keysizes]
-    normalized_hammings.sort()
+    normalized_hammings = []
+    for keysize in keysizes:
+        f.seek(0)
+        left = base642hex(f.read(keysize))
+        right = base642hex(f.read(keysize))
+
+        if(left is None or right is None):
+            continue
+
+        hd = hamming_distance_bytes(left,right)/keysize
+        normalized_hammings.append((keysize, hd))
+    normalized_hammings.sort(key=lambda x: x[1])
     return normalized_hammings[0:n]
 
 # helper functions
@@ -170,6 +185,6 @@ def test():
     assert hamming_distance('this is a test', 'wokka wokka!!!') == 37
 
     filename = 'cc06in.txt'
-    # print(get_min_hamming_dist_keysizes(filename, 3))
+    print(get_min_hamming_dist_keysizes(filename, 3))
 
     print('tests passed')
