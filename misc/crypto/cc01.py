@@ -11,18 +11,20 @@ def hex2base64(data):
     """
     return ba.b2a_base64(ba.unhexlify(data))[:-1]
 
+
 def base642hex(data):
-    padded = pad64(data) 
-    print(padded)
+    padded = pad64(data)
     try:
         decoded64 = base64.b64decode(pad64(data))
     except ba.Error:
         return None
     return ba.hexlify(decoded64)
 
+
 def pad64(bytestring):
-    missing = 4 - len(bytestring) % 4 
+    missing = 4 - len(bytestring) % 4
     return bytestring + b'=' * missing if missing > 0 else bytestring
+
 
 def xor(left, right):
     """
@@ -81,7 +83,9 @@ def is_english_kinda(decoded):
     num_alpha = len([c for c in decoded if str(c).isalpha()])
     num_expected_spaces = (len(decoded)/AVG_LEN_WORD)
 
-    return num_alpha > len(decoded)*0.6 and decoded.count(' ') > num_expected_spaces/2
+    decent_alpha_ratio = num_alpha > len(decoded)*0.6
+    decent_num_spaces = decoded.count(' ') > num_expected_spaces/2
+    return decent_alpha_ratio and decent_num_spaces
 
 
 def repeating_key_xor(data, key):
@@ -98,20 +102,43 @@ def repeating_key_xor(data, key):
     keys = list(map(char_to_hex, list(key)))
 
     # get xored char append encrypted byte to encoded data
-    return "".join([xor(hex_char, keys[i % len(key)]) for i, hex_char in enumerate(hex_chars)])
+    return "".join([xor(hex_char, keys[i % len(key)])
+                    for i, hex_char in enumerate(hex_chars)])
 
 
-def decode_repeating_key_xor(file):
-    # find keysize with min hd/keysize
+def decode_repeating_key_xor(filename):
+    # find keysize
+    f = open(filename, 'rb')
+    keysize, distance = get_min_hamming_dist_keysizes(f, 1)[0]
 
     # break text into keysize blocks
+    blocks = get_file_blocks(f, keysize)
 
-    # transpose blocks???
-    return 
+    # transpose blocks
+    transposed = get_transposed_blocks(blocks, keysize)
 
-def get_min_hamming_dist_keysizes(file, n):
+    # solve each block as single char xor
+    return
+
+
+def get_transposed_blocks(blocks, keysize):
+    return [[block[byte] for block in blocks] for byte in range(keysize)]
+
+
+def get_file_blocks(f, size):
+    f.seek(0)
+    blocks = []
+    while True:
+        block = f.read(size)
+        if block:
+            blocks.append(block)
+        else:
+            break
+    return blocks
+
+
+def get_min_hamming_dist_keysizes(f, n):
     keysizes = range(2, 40)
-    f = open(file, 'rb')
     normalized_hammings = []
     for keysize in keysizes:
         f.seek(0)
@@ -121,12 +148,14 @@ def get_min_hamming_dist_keysizes(file, n):
         if(left is None or right is None):
             continue
 
-        hd = hamming_distance_bytes(left,right)/keysize
+        hd = hamming_distance_bytes(left, right)/keysize
         normalized_hammings.append((keysize, hd))
     normalized_hammings.sort(key=lambda x: x[1])
     return normalized_hammings[0:n]
 
 # helper functions
+
+
 def char_to_hex(c):
     return hex(ord(c))
 
@@ -146,11 +175,12 @@ def hamming_distance(str1, str2):
     hex2 = ba.hexlify(str2.encode())
     return hamming_distance_bytes(hex1, hex2)
 
+
 def hamming_distance_bytes(bytechunk1, bytechunk2):
     xored = xor(bytechunk1, bytechunk2)
     bin_ver = bin(int(xored, 16))
     return bin_ver.count('1')
-    
+
 
 def test():
     # challenge 1
@@ -185,6 +215,15 @@ def test():
     assert hamming_distance('this is a test', 'wokka wokka!!!') == 37
 
     filename = 'cc06in.txt'
-    print(get_min_hamming_dist_keysizes(filename, 3))
+    f = open(filename, 'rb')
+    keysize, dist = get_min_hamming_dist_keysizes(f, 1)[0]
+    assert keysize == 4
+
+    # check all blocks are of len keysize
+    blocks = get_file_blocks(f, keysize)
+    assert len([b for b in blocks if len(b) != keysize]) == 0
+
+    # check transposed blocks
+    assert len(get_transposed_blocks(blocks, keysize)) == keysize
 
     print('tests passed')
