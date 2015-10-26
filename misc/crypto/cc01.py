@@ -1,6 +1,7 @@
 import binascii as ba
 import base64
 import codecs
+import math
 
 AVG_LEN_WORD = 5
 
@@ -16,13 +17,13 @@ def base642hex(data):
     padded = pad64(data)
     try:
         decoded64 = base64.b64decode(pad64(data))
-    except ba.Error:
+    except TypeError:
         return None
     return ba.hexlify(decoded64)
 
 
 def pad64(bytestring):
-    missing = 4 - len(bytestring) % 4
+    missing = len(bytestring) % 4
     return bytestring + b'=' * missing if missing > 0 else bytestring
 
 
@@ -52,13 +53,16 @@ def decode_xor(encoded):
         decoded = codecs.decode(hex_str, "hex")
 
         # try to decode that into utf-8
+
+        isutf8 = True
         try:
             decoded = decoded.decode('utf-8')
-            if is_english_kinda(decoded):
-                decoded_msgs.append((ba.unhexlify(k), decoded))
         except UnicodeDecodeError:
+            isutf8 = False
             pass
 
+        if isutf8 and is_english_kinda(decoded):
+            decoded_msgs.append((k, decoded))
 
     # return decoded messages
     return decoded_msgs
@@ -82,15 +86,14 @@ def is_english_kinda(decoded):
     """
     num_alpha = len([c for c in decoded if str(c).isalpha()])
     num_expected_spaces = (len(decoded)/AVG_LEN_WORD)
-
+    num_spaces = decoded.count(' ')
     decent_alpha_ratio = num_alpha > len(decoded)*0.6
-    decent_num_spaces = decoded.count(' ') > num_expected_spaces/2
+    decent_num_spaces = num_spaces > num_expected_spaces/2
     return decent_alpha_ratio and decent_num_spaces
-
 
 def repeating_key_xor(data, key):
     """
-    challenge 4: decodes xor-ed message with a repeating key
+    challenge 5: decodes xor-ed message with a repeating key
     """
     # data to hex chars
     hex_chars = string_to_hex(data)
@@ -114,12 +117,25 @@ def decode_repeating_key_xor(filename):
     # transpose blocks
     transposed = get_transposed_blocks(blocks, keysize)
 
-    # solve each block as single char xor
+    for block in transposed:
+        padding = math.ceil(len(block) % 2)
+        print(padding)
+        padded = block.zfill(len(block) + padding)
+        print(block)
+        print(padded)
+        block_hex = base642hex(codecs.encode(padded))
+        # print(block_hex)
+        messages = decode_xor(block_hex)
+        print(messages)
+   
     return
 
 
 def get_transposed_blocks(blocks, keysize):
-    return [[block[byte] for block in blocks] for byte in range(keysize)]
+    transposed = ["".join([chr(block[byte]) 
+        for block in blocks]) 
+        for byte in range(keysize)]
+    return transposed
 
 
 def get_file_blocks(f, size):
@@ -135,7 +151,7 @@ def get_file_blocks(f, size):
 
 
 def get_min_hamming_dist_keysizes(f, n):
-    keysizes = range(2, 40)
+    keysizes = range(2, 100)
     normalized_hammings = []
     for keysize in keysizes:
         f.seek(0)
@@ -195,12 +211,15 @@ def test():
     msg = '1b37373331363f78151b7f2b783431333d78397828372d363c78373e783a393b3736'
     msg_decoded = decode_xor(msg)
 
+    print(msg_decoded)
     assert msg_decoded[0][1] == "Cooking MC's like a pound of bacon"
+
+    # challenge 4 
 
     # interlude 1
     assert get_byte_array('0100') == ['01', '00']
 
-    # challenge 4
+    # challenge 5
     msg_in_1 = "Burning 'em, if you ain't quick and nimble\nI go crazy when I hear a cymbal"
     msg_out_1 = "0b3637272a2b2e63622c2e69692a23693a2a3c6324202d623d63343c2a26226324272765272a282b2f20430a652e2c652a3124333a653e2b2027630c692b20283165286326302e27282f"
     key = 'ICE'
@@ -222,5 +241,7 @@ def test():
 
     # check transposed blocks
     assert len(get_transposed_blocks(blocks, keysize)) == keysize
+
+    decode_repeating_key_xor(filename)
 
     print('tests passed')
