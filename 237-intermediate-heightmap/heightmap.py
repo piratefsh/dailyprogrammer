@@ -24,6 +24,27 @@ def rotate(boxes):
         rotated.append(rot_row)
     return rotated
 
+def flood(grid, node, target, depth):
+    x, y = node
+    if target == char_map[depth]:
+        return
+
+    if node not in grid or grid[node] not in target:
+        return 
+
+    if grid[node] in '+|-':
+        flood(grid, (x+1, y+1), target, depth+1)
+
+    if grid[node] == ' ':
+        grid[node] = char_map[depth] 
+        flood(grid, (x+1, y), target, depth)
+        flood(grid, (x, y+1), target, depth)
+        flood(grid, (x-1, y), target, depth)
+        flood(grid, (x, y-1), target, depth)
+
+    return
+
+
 def map_height(boxes):
     boxes = boxes.split('\n')
     rotated = rotate(boxes)
@@ -64,7 +85,16 @@ def boxes_repr(boxes):
         for col in row:
             outstr += str(col)
         outstr += '\n'
-    return outstr[:-1]
+    return outstr
+
+
+def grid_repr(grid):
+    outstr = ''
+    for x,y in sorted(grid.keys()):
+        if y == 0 and x != 0:
+            outstr += '\n'
+        outstr += grid[(x, y)]
+    return outstr
 
 def get_num_edges(boxes):
     #for each column, count edges
@@ -115,6 +145,26 @@ def test_tricky():
     out = boxes_repr(map_height(boxes))
     write_out('output00-test.txt', out)
 
+    assert out == expected
+
+    print('tests pass')
+
+def test_flood():
+    # tricky
+    boxes, expected = get_inout('input00.txt', 'output00.txt') 
+    
+    grid = {}
+
+    for r, row in enumerate(boxes.split('\n')):
+        for c, char in enumerate(row):
+            grid[(r, c)] = char 
+
+    flood(grid, (0, 0), ' +=|', -1)
+
+    out = grid_repr(grid)
+
+    print(out)
+    
     assert out == expected
 
     print('tests pass')
