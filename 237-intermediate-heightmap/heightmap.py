@@ -1,3 +1,6 @@
+import sys 
+sys.setrecursionlimit(10000)
+
 
 """
 Boxes on layer 0 should be filled with the character #;
@@ -6,7 +9,7 @@ Boxes on layer 2 should be filled with the character -;
 Boxes on layer 3 should be filled with the character .;
 Boxes on layer 4 and above should not be filled.
 """
-char_map = ['#', '=', '-', '.', ' ']
+char_map = ['#', '=', '-', '.']
 
 def rotate(boxes):
     edge_map = {
@@ -26,17 +29,20 @@ def rotate(boxes):
 
 def flood(grid, node, target, depth):
     x, y = node
-    if target == char_map[depth]:
+
+    color = char_map[depth] if depth < len(char_map) else None
+    
+    if target == color:
         return
 
-    if node not in grid or grid[node] not in target:
+    if node not in grid or str(grid[node]) not in target:
         return 
 
     if grid[node] in '+|-':
         flood(grid, (x+1, y+1), target, depth+1)
 
     if grid[node] == ' ':
-        grid[node] = char_map[depth] 
+        grid[node] = color 
         flood(grid, (x+1, y), target, depth)
         flood(grid, (x, y+1), target, depth)
         flood(grid, (x-1, y), target, depth)
@@ -93,7 +99,7 @@ def grid_repr(grid):
     for x,y in sorted(grid.keys()):
         if y == 0 and x != 0:
             outstr += '\n'
-        outstr += grid[(x, y)]
+        outstr += grid[(x, y)] if grid[(x, y)] is not None else ' '
     return outstr
 
 def get_num_edges(boxes):
@@ -149,9 +155,9 @@ def test_tricky():
 
     print('tests pass')
 
-def test_flood():
+def test_flood_one(inf, outf):
     # tricky
-    boxes, expected = get_inout('input00.txt', 'output00.txt') 
+    boxes, expected = get_inout(inf, outf) 
     
     grid = {}
 
@@ -160,11 +166,12 @@ def test_flood():
             grid[(r, c)] = char 
 
     flood(grid, (0, 0), ' +=|', -1)
-
     out = grid_repr(grid)
-
     print(out)
-    
     assert out == expected
-
     print('tests pass')
+
+def test_flood():
+    test_flood_one('input00.txt', 'output00.txt')
+    test_flood_one('input02.txt', 'output02.txt')
+
