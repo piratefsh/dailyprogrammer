@@ -61,4 +61,3 @@ target/
 .DS_Store
 .venv
 .ipynb_checkpoints
-node_modules
