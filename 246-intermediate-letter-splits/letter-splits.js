@@ -12,12 +12,15 @@ class LetterSplits{
 
         this.dict = {};
         const data = fs.readFileSync('enable1.txt').toString();
+
+        // save dict by 2 letter prefix
         data.split('\n').forEach((word) => {
-            if(!(word[0] in this.dict)){
-                this.dict[word[0]] = [word.trim()];
+            const prefix = word.slice(0, 2);
+            if(!(prefix in this.dict)){
+                this.dict[prefix] = [word.trim()];
             }
             else{
-                this.dict[word[0]].push(word.trim());
+                this.dict[prefix].push(word.trim());
             }
         })
         this.minWordLength = minWordLength || 3;
@@ -26,10 +29,11 @@ class LetterSplits{
     }
 
     lookup(word){
-        if(word.length < 1) return false;
+        if(word.length < 2) return false;
 
         word = word.toLowerCase();
-        return this.dict[word[0]].indexOf(word) > -1;
+        const prefix = word.slice(0, 2);
+        return prefix in this.dict && this.dict[prefix].indexOf(word) > -1;
     }
 
     split(word){
@@ -85,7 +89,6 @@ class LetterSplits{
         // else do validation
         const results = [];
         return candidates.filter((candidate, i)=>{
-            console.log(Math.floor((i/candidates.length)*100), '%');
             return this.valid(candidate);
         });
     }
