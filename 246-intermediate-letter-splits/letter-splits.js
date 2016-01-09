@@ -10,10 +10,26 @@ class LetterSplits{
             this.mapping['' + (i + 1)] = String.fromCharCode(65 + i);
         }
 
-        this.dict  = fs.readFileSync('enable1.txt').toString();
+        this.dict = {};
+        const data = fs.readFileSync('enable1.txt').toString();
+        data.split('\n').forEach((word) => {
+            if(!(word[0] in this.dict)){
+                this.dict[word[0]] = [word.trim()];
+            }
+            else{
+                this.dict[word[0]].push(word.trim());
+            }
+        })
         this.minWordLength = minWordLength || 3;
 
         this.tested = {};
+    }
+
+    lookup(word){
+        if(word.length < 1) return false;
+
+        word = word.toLowerCase();
+        return this.dict[word[0]].indexOf(word) > -1;
     }
 
     split(word){
@@ -45,15 +61,14 @@ class LetterSplits{
             }
 
             else{
-                const re = new RegExp(`^${first}$`, 'im');
-                const exists = re.test(this.dict);
+                const exists = this.lookup(first);
                 if(exists){
                     // find if rest of string is valid
                     if(this.valid(rest)){
                         return true;
                     }
                 }
-
+                // save result
                 this.tested[first] = exists;
             }
         }
@@ -69,7 +84,8 @@ class LetterSplits{
 
         // else do validation
         const results = [];
-        return candidates.filter((candidate)=>{
+        return candidates.filter((candidate, i)=>{
+            console.log(Math.floor((i/candidates.length)*100), '%');
             return this.valid(candidate);
         });
     }
