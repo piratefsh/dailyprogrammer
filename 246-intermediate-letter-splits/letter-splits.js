@@ -49,11 +49,12 @@ class LetterSplits{
 
         // else find segments
         const segments = this.split(partial);
-        for(let segment of segments){
-            let first = segment[0];
-            let rest = segment[1];
+        for(let i = this.minWordLength; i < partial.length + 1; i++){
+            let first = partial.slice(0, i);
+            let rest = partial.slice(i);
 
             // if is valid substring (exists in dictionary)
+
             if(this.lookup(first)){
                 // find if rest of string is valid
                 if(this.valid(rest)){
