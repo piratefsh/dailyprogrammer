@@ -27,9 +27,15 @@ module.exports =
         var res = ls.decode('1234567899876543210');
         var resstr = res.sort().join(',');
         var expected = 'LCDEFGHIIHGFEDCBJ,AWDEFGHIIHGFEDCBJ,ABCDEFGHIIHGFEDCBJ'.split(',').sort().join();
-        
-        console.log(resstr)
         test.equal(resstr, expected, 'found expected answer');
+        test.done();
+    },
+    'test case: JET': function(test){
+        var ls = new LetterSplits();
+        var res = ls.decode('10520');
+        var expected = 'JET';
+        test.equal(res.length, 1, 'found one result');
+        test.equal(res[0], expected, 'found expected answer');
         test.done();
     }
 } 

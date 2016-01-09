@@ -17,6 +17,7 @@ class LetterSplits{
             words.push(currWord);
             return words;
         }
+        
         else if(integers.length == 1){
             if(integers in this.mapping){
                 words.push(currWord + this.mapping[integers]);
