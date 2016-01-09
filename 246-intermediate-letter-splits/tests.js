@@ -89,6 +89,7 @@ module.exports =
     'bonus': function(test){
         var ls = new LetterSplits(5);
         var res = ls.decode('81161625815129412519419122516181571811313518', true);
+        console.log(res);
         test.equal(res.length, 1, 'found answer: ' + res);
         test.done();
     }

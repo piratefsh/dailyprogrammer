@@ -24,8 +24,6 @@ class LetterSplits{
             }
         })
         this.minWordLength = minWordLength || 3;
-
-        this.tested = {};
     }
 
     lookup(word){
@@ -56,24 +54,11 @@ class LetterSplits{
             let rest = segment[1];
 
             // if is valid substring (exists in dictionary)
-
-            // lookup if has been searched
-            if(first in this.tested && this.tested[first]){
+            if(this.lookup(first)){
+                // find if rest of string is valid
                 if(this.valid(rest)){
                     return true;
                 }
-            }
-
-            else{
-                const exists = this.lookup(first);
-                if(exists){
-                    // find if rest of string is valid
-                    if(this.valid(rest)){
-                        return true;
-                    }
-                }
-                // save result
-                this.tested[first] = exists;
             }
         }
         return false;
