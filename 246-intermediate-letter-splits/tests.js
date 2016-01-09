@@ -39,6 +39,17 @@ module.exports =
         test.equal(res[0], expected, 'found expected answer');
         test.done();
     },
+    
+    'splits': function(test){
+        
+        var ls = new LetterSplits(1);
+        var res = ls.split('abc');
+        test.equal(res.length, 3, 'split into 3');
+        test.ok(res[0].indexOf('a') > -1 && res[0].indexOf('bc') > -1 , 'split into 3');
+        test.ok(res[1].indexOf('ab') > -1 && res[1].indexOf('c') > -1 , 'split into 3');
+        test.ok(res[2].indexOf('abc') > -1 && res[2].indexOf('') > -1 , 'split into 3');
+        test.done();
+    },
 
     'test validation': function(test){
         var ls = new LetterSplits();
@@ -73,6 +84,7 @@ module.exports =
         test.equal(resstr, expected, 'found expected answer');
         test.done();
     },
+
 
     'bonus': function(test){
         var ls = new LetterSplits(5);

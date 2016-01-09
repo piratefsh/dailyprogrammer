@@ -11,7 +11,17 @@ class LetterSplits{
         }
 
         this.dict  = fs.readFileSync('enable1.txt').toString();
-        this.minWordLength = minWordLength || 3
+        this.minWordLength = minWordLength || 3;
+
+        this.tested = {};
+    }
+
+    split(word){
+        const splits = [];
+        for(let i = this.minWordLength; i < word.length + 1; i++){
+            splits.push([word.slice(0, i), word.slice(i)]);
+        }
+        return splits;
     }
 
     valid(partial){
@@ -19,44 +29,59 @@ class LetterSplits{
             return true;
         }
 
-        const wholeRe = new RegExp(`^${partial}$`, 'im');
+        // else find segments
+        const segments = this.split(partial);
+        for(let segment of segments){
+            let first = segment[0];
+            let rest = segment[1];
 
-        // if whole word exists, consider found
-        if(wholeRe.test(this.dict)){
-            return true;
-        }
-
-        // else find substrings
-        for(let i = this.minWordLength; i < partial.length+1; i++){
             // if is valid substring (exists in dictionary)
-            const substr = partial.slice(0,i);
-            const re = new RegExp(`^${substr}$`, 'im');
-            if(re.test(this.dict)){
-                // find if rest of string is valid
-                if(this.valid(partial.slice(i))){
+
+            // lookup if has been searched
+            if(first in this.tested && this.tested[first]){
+                if(this.valid(rest)){
                     return true;
                 }
+            }
+
+            else{
+                const re = new RegExp(`^${first}$`, 'im');
+                const exists = re.test(this.dict);
+                if(exists){
+                    // find if rest of string is valid
+                    if(this.valid(rest)){
+                        return true;
+                    }
+                }
+
+                this.tested[first] = exists;
             }
         }
         return false;
     }
 
-    decode(integers, validate, currWord){
-        currWord = currWord || "";
+    decode(integers, validate){
+        const candidates = this.decodeCandidates(integers, "");
+        // return as is if no validation
+        if(!validate){
+            return candidates;
+        }
+
+        // else do validation
+        const results = [];
+        return candidates.filter((candidate)=>{
+            return this.valid(candidate);
+        });
+    }
+
+    decodeCandidates(integers, currWord){
 
         let words = [];
 
         // reached end of integer
         if(integers.length == 0){
             // validate if necessary
-            if(validate) {
-                if(this.valid(currWord)){
-                    words.push(currWord);
-                }
-            }
-            else{
-                words.push(currWord);
-            }
+            words.push(currWord);
 
             return words;
         }
@@ -64,8 +89,8 @@ class LetterSplits{
         // if valid first digit (non-zero)
         if(integers[0] in this.mapping){
             // add char for first digit to currWord, find rest of decoding
-            words = words.concat(this.decode(integers.slice(1), validate,
-                currWord + this.mapping[integers[0]]));
+            const w1 = currWord + this.mapping[integers[0]]
+            words = words.concat(this.decodeCandidates(integers.slice(1), w1));
 
             // if has second digit
             if(integers.length > 1){
@@ -73,8 +98,8 @@ class LetterSplits{
                 const doubleDigit = parseInt(integers.slice(0, 2));
                 if(doubleDigit < 26){
                     // add char for double digit to currWord, find rest of decoding
-                    words = words.concat(this.decode(integers.slice(2), validate,
-                        currWord + this.mapping[doubleDigit]));
+                    const w2 = currWord + this.mapping[doubleDigit]
+                    words = words.concat(this.decodeCandidates(integers.slice(2), w2));
                 }
             }
         }
