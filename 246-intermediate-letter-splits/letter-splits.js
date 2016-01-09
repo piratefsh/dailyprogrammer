@@ -11,10 +11,10 @@ class LetterSplits{
         }
 
         this.dict = {};
-        const data = fs.readFileSync('enable1.txt').toString();
+        this.data = fs.readFileSync('enable1.txt').toString();
 
         // save dict by 2 letter prefix
-        data.split('\n').forEach((word) => {
+        this.data.split('\n').forEach((word) => {
             const prefix = word.slice(0, 2);
             if(!(prefix in this.dict)){
                 this.dict[prefix] = [word.trim()];
@@ -42,22 +42,24 @@ class LetterSplits{
         return splits;
     }
 
-    valid(partial){
+    valid(partial, partialMatch){
         if(partial.length == 0){
             return true;
         }
 
+        if(partialMatch && new RegExp(`^${partial}`, 'im').test(this.data)){
+            return true;
+        }
+
         // else find segments
-        const segments = this.split(partial);
         for(let i = this.minWordLength; i < partial.length + 1; i++){
-            let first = partial.slice(0, i);
-            let rest = partial.slice(i);
+            let first = partial.slice(0, i)
+            let rest = partial.slice(i)
 
             // if is valid substring (exists in dictionary)
-
-            if(this.lookup(first)){
+            if(new RegExp(`^${first}$`, 'im').test(this.data)){
                 // find if rest of string is valid
-                if(this.valid(rest)){
+                if(this.valid(rest, partialMatch)){
                     return true;
                 }
             }
@@ -66,28 +68,27 @@ class LetterSplits{
     }
 
     decode(integers, validate){
-        const candidates = this.decodeCandidates(integers, "");
-        // return as is if no validation
-        if(!validate){
-            return candidates;
-        }
-
-        // else do validation
-        const results = [];
-        return candidates.filter((candidate, i)=>{
-            return this.valid(candidate);
-        });
+        const candidates = this.decodeCandidates(integers, "", validate);
+        return candidates;
     }
 
-    decodeCandidates(integers, currWord){
-
+    decodeCandidates(integers, currWord, validate){
         let words = [];
 
         // reached end of integer
         if(integers.length == 0){
-            // validate if necessary
-            words.push(currWord);
+            if(validate){
+                if(this.valid(currWord)){
+                    words.push(currWord);
+                }
+            }
+            else{
+                words.push(currWord);
+            }
+            return words;
+        }
 
+        if(validate && currWord.length > 0 && !this.valid(currWord, true)){
             return words;
         }
 
@@ -95,7 +96,7 @@ class LetterSplits{
         if(integers[0] in this.mapping){
             // add char for first digit to currWord, find rest of decoding
             const w1 = currWord + this.mapping[integers[0]]
-            words = words.concat(this.decodeCandidates(integers.slice(1), w1));
+            words = words.concat(this.decodeCandidates(integers.slice(1), w1, validate));
 
             // if has second digit
             if(integers.length > 1){
@@ -104,7 +105,7 @@ class LetterSplits{
                 if(doubleDigit < 26){
                     // add char for double digit to currWord, find rest of decoding
                     const w2 = currWord + this.mapping[doubleDigit]
-                    words = words.concat(this.decodeCandidates(integers.slice(2), w2));
+                    words = words.concat(this.decodeCandidates(integers.slice(2), w2, validate));
                 }
             }
         }
