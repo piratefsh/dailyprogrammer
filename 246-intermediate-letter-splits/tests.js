@@ -2,7 +2,7 @@ var LetterSplits = require('./letter-splits');
 
 module.exports =
 {
-    mappingGenerated: function(test){
+    'mapping generated correctly': function(test){
         console.log(LetterSplits);
         var ls = new LetterSplits();
         var numLetters = Object.keys(ls.mapping).length;
@@ -30,12 +30,54 @@ module.exports =
         test.equal(resstr, expected, 'found expected answer');
         test.done();
     },
+
     'test case: JET': function(test){
         var ls = new LetterSplits();
         var res = ls.decode('10520');
         var expected = 'JET';
         test.equal(res.length, 1, 'found one result');
         test.equal(res[0], expected, 'found expected answer');
+        test.done();
+    },
+
+    'test validation': function(test){
+        var ls = new LetterSplits();
+        test.ok(ls.valid('ACUTE'), 'ACUTE is valid word');
+        test.ok(!ls.valid('MBATE'), 'MDATE is not a valid word');
+        test.done();
+    },
+    
+    'test case: 1321205': function(test){
+        var ls = new LetterSplits();
+        var res = ls.decode('1321205', true);
+        var resstr = res.sort().join(',');
+        var expected = 'ACUTE,MUTE'.split(',').sort().join();
+        test.equal(resstr, expected, 'found expected answer');
+        test.done();
+    },
+
+    'test case: 1252020518': function(test){
+        var ls = new LetterSplits();
+        var res = ls.decode('1252020518', true);
+        var resstr = res.sort().join(',');
+        var expected = 'LETTER,ABETTER'.split(',').sort().join();
+        test.equal(resstr, expected, 'found expected answer');
+        test.done();
+    },
+
+    'HELLOWORLD': function(test){
+        var ls = new LetterSplits(4);
+        var res = ls.decode('85121215231518124', true);
+        var resstr = res.sort().join(',');
+        var expected = 'HELLOWORLD'.split(',').sort().join();
+        test.equal(resstr, expected, 'found expected answer');
+        test.done();
+    },
+
+    'bonus': function(test){
+        var ls = new LetterSplits(5);
+        var res = ls.decode('81161625815129412519419122516181571811313518', true);
+        test.equal(res.length, 1, 'found answer: ' + res);
         test.done();
     }
 } 
