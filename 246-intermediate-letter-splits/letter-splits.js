@@ -13,27 +13,24 @@ class LetterSplits{
         currWord = currWord || "";
         let words = [];
 
+        // reached end of integer
         if(integers.length == 0){
             words.push(currWord);
             return words;
         }
-        
-        else if(integers.length == 1){
-            if(integers in this.mapping){
-                words.push(currWord + this.mapping[integers]);
-            }
-            return words;
-        }
 
-        // if valid first digit
+        // if valid first digit (non-zero)
         if(integers[0] in this.mapping){
             // concat first digit
             words = words.concat(this.decode(integers.slice(1), currWord + this.mapping[integers[0]]));
 
-            // check if double digit is valid char
-            const doubleDigit = parseInt(integers.slice(0, 2));
-            if(doubleDigit < 26){
-                words = words.concat(this.decode(integers.slice(2), currWord + this.mapping[doubleDigit]));
+            // if has second digit
+            if(integers.length > 1){
+                // check if double digit is valid char
+                const doubleDigit = parseInt(integers.slice(0, 2));
+                if(doubleDigit < 26){
+                    words = words.concat(this.decode(integers.slice(2), currWord + this.mapping[doubleDigit]));
+                }
             }
         }
 
